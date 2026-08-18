@@ -6,7 +6,6 @@
 
     site/
       index.html            → odrodok.ru        (заглушка со знаком)
-      holding.html          исходник заглушки, копируется в index.html при сборке
       pervoprohodcy.html    → odrodok.ru/pervoprohodcy
       vozduh.html           → odrodok.ru/vozduh
       favicon.ico
@@ -19,6 +18,7 @@
         pervoprohodcy/      обложка, кадры, og
         vozduh/             кадры, og
       src/                  исходные тексты замыслов
+      src/_archive/         черновики, которые пока не в работе
       tools/nbsp.py         типограф: убирает висячие предлоги
       dist/                 архивы сборок для заливки на хостинг
 

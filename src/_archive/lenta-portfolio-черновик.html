@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Одродок — документальные фильмы</title>
+<meta name="description" content="Одродок — студия документального кино. Фильмы, этюды и монологи.">
+
+<!--
+  ЗАМЕНА ПЛЕЙСХОЛДЕРОВ:
+  1) Kinescope: у каждой карточки атрибут data-video="KINESCOPE_ID_..." —
+     впиши реальный id видео с kinescope.io (из ссылки/embed-кода), плеер подставится сам.
+  2) Описания фильмов и хронометраж — черновой текст, отмечен как [TODO].
+  Обложки — готовые файлы из папки проекта, лежат в assets/cards/.
+-->
+
+<style>
+  @font-face{
+    font-family: 'OCRABecker';
+    src: url('assets/fonts/ocra-becker.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  :root{
+    --bg:#ffffff;
+    --ink:#0a0a0a;
+    --grey:#8a8a86;
+    --accent:#e8431f;
+    --paper:#f2f0ea;
+
+    --frame-w: 1060px;
+    /* колонка цифр слева + отбивка до рамки обложки */
+    --num-col: 56px;
+    --num-gap: 30px;
+    /* ширина бокового поля обложки — 150/1920 исходника */
+    --side: 7.8125%;
+
+    /* толщина обводки текста */
+    --stroke: 1.1px;
+    --stroke-h: 1.7px; /* заголовки */
+
+    /* единый кегль основного текста: цифры, описание, кнопка */
+    --fs-body: 14px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'OCRABecker', monospace;
+  }
+
+  /* ОБВОДКА ТЕКСТА
+     paint-order: stroke fill — обводка рисуется ПОД заливкой,
+     поэтому буква утолщается наружу и контур виден, а не съедает внутренности.
+     Толщина правится в одном месте — переменной --stroke. */
+  body, h2, p, a, span, button, div{
+    paint-order: stroke fill;
+    -webkit-text-stroke: var(--stroke) currentColor;
+  }
+
+  a{color:inherit;text-decoration:none;}
+
+  /* HEADER */
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    max-width:var(--frame-w);margin:0 auto;
+    padding:28px 24px 10px;
+  }
+  header .brand{display:flex;align-items:center;gap:12px;}
+  header .brand img{width:34px;height:34px;display:block;}
+  header .brand span{
+    -webkit-text-stroke: var(--stroke-h) currentColor;
+    font-size:15px;letter-spacing:1px;text-transform:uppercase;
+  }
+  header nav{display:flex;gap:22px;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;}
+  header nav a{color:var(--grey);}
+  header nav a:hover{color:var(--ink);}
+
+  /* SECTIONS */
+  section.group{
+    max-width:var(--frame-w);margin:0 auto;
+    padding:80px 24px 10px;
+  }
+  /* заголовок встаёт по левой линии обложки (после колонки цифр) */
+  section.group h2{
+    -webkit-text-stroke: var(--stroke-h) currentColor;
+    margin-left: calc(var(--num-col) + var(--num-gap));
+    font-size:26px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-bottom:44px;
+  }
+
+  /* CARD — двухколоночная сетка: цифры | контент */
+  .card{
+    display:grid;
+    grid-template-columns: var(--num-col) 1fr;
+    column-gap: var(--num-gap);
+    margin-bottom:70px;
+  }
+  /* колонка цифр: выравнивание по правому краю */
+  .card .num{
+    text-align:right;
+    font-size:var(--fs-body);
+    letter-spacing:0.5px;
+    padding-top:2px;
+  }
+
+  /* ОБЛОЖКА — готовый файл целиком, 16:9, с тенью */
+  .filmframe{
+    display:block;
+    aspect-ratio: 16 / 9;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.88);
+  }
+  .filmframe img{display:block;width:100%;height:100%;object-fit:cover;}
+
+  /* ОПИСАНИЕ — отступ равен боковому полю обложки */
+  .card .meta{
+    grid-column: 2;
+    padding-left: var(--side);
+    padding-top:30px;
+  }
+  /* описание — тот же кегль и трекинг, что у цифр */
+  .card .meta p{
+    font-size:var(--fs-body);
+    line-height:1.55;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    max-width:600px;
+  }
+  .card .watch{
+    display:inline-block;
+    margin-top:26px;
+    font-size:var(--fs-body);
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--accent);
+    border-bottom:1px solid var(--accent);
+    cursor:pointer;
+    background:none;
+    border-top:none;border-left:none;border-right:none;
+    font-family:inherit;
+    padding:0 0 2px;
+  }
+  .card .watch:hover{opacity:0.7;}
+
+  /* строка с таймингом: цифра слева, описание справа */
+  .card .num.runtime{padding-top:30px;}
+
+  /* FOOTER */
+  footer{
+    max-width:var(--frame-w);margin:40px auto 0;
+    padding:60px 24px 80px;
+    display:flex;justify-content:space-between;align-items:center;
+    border-top:1px solid #eee;
+  }
+  footer .contact a{
+    font-size:13px;letter-spacing:0.5px;
+  }
+  footer .copy{
+    font-size:12px;color:var(--grey);
+  }
+
+  /* MODAL PLAYER */
+  .player-overlay{
+    position:fixed;inset:0;
+    background:rgba(10,10,10,0.92);
+    display:none;align-items:center;justify-content:center;
+    z-index:100;padding:40px 20px;
+  }
+  .player-overlay.open{display:flex;}
+  .player-box{
+    width:100%;max-width:1100px;
+    aspect-ratio:16/9;background:#111;position:relative;
+  }
+  .player-box iframe{width:100%;height:100%;border:0;display:block;}
+  .player-close{
+    position:absolute;top:-40px;right:0;
+    background:none;border:none;color:#fff;font-family:inherit;
+    font-size:14px;letter-spacing:1px;text-transform:uppercase;
+  }
+
+  @media(max-width:640px){
+    :root{--num-col:34px;--num-gap:12px;}
+    section.group h2{font-size:19px;margin-bottom:28px;}
+    .card .num{font-size:11px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="assets/logo.png" alt="Одродок">
+    <span>Одродок</span>
+  </div>
+  <nav>
+    <a href="#new">Новое</a>
+    <a href="#films">Фильмы</a>
+    <a href="#etudes">Этюды</a>
+    <a href="#monologues">Монологи</a>
+    <a href="pervoprohodcy.html">Первопроходцы</a>
+  </nav>
+</header>
+
+<!-- НОВОЕ -->
+<section class="group" id="new">
+  <h2>Новое</h2>
+
+  <div class="card">
+    <div class="num">#4</div>
+    <div class="filmframe"><img src="assets/cards/gde-nas-net.jpg" alt="Где нас нет — Белградские этюды"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Фильм-путешествие — пять белградских этюдов. Сквозь пейзаж, почти без слов, четверо друзей находят утерянное спокойствие — и возвращаются домой. Не зря говорят, хорошо там, где нас нет.</p>
+      <button class="watch" data-video="KINESCOPE_ID_GDE_NAS_NET">Подробнее &gt;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ФИЛЬМЫ -->
+<section class="group" id="films">
+  <h2>Фильмы</h2>
+
+  <div class="card">
+    <div class="num">#1</div>
+    <div class="filmframe"><img src="assets/cards/kukushka.jpg" alt="Кукушка в Ясном поле"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание фильма «Кукушка в Ясном поле» — тема, герои, о чём путешествие.</p>
+      <button class="watch" data-video="KINESCOPE_ID_KUKUSHKA">Подробнее &gt;</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="num">#2</div>
+    <div class="filmframe"><img src="assets/cards/dva-brata.jpg" alt="Два брата"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание фильма «Два брата» — тема, герои, о чём путешествие.</p>
+      <button class="watch" data-video="KINESCOPE_ID_DVA_BRATA">Подробнее &gt;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ЭТЮДЫ -->
+<section class="group" id="etudes">
+  <h2>Этюды</h2>
+
+  <div class="card">
+    <div class="num">#3</div>
+    <div class="filmframe"><img src="assets/cards/bloki.jpg" alt="Блоки — Белградские этюды"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание этюда «Блоки» из цикла «Белградские этюды».</p>
+      <button class="watch" data-video="KINESCOPE_ID_BLOKI">Подробнее &gt;</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="num">#3</div>
+    <div class="filmframe"><img src="assets/cards/leto-peremen.jpg" alt="Лето перемен — Московские этюды"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание этюда «Лето перемен» из цикла «Московские этюды».</p>
+      <button class="watch" data-video="KINESCOPE_ID_LETO_PEREMEN">Подробнее &gt;</button>
+    </div>
+  </div>
+</section>
+
+<!-- МОНОЛОГИ -->
+<section class="group" id="monologues">
+  <h2>Монологи</h2>
+
+  <div class="card">
+    <div class="num">#3</div>
+    <div class="filmframe"><img src="assets/cards/chto-takoe-druzhba.jpg" alt="Что такое дружба?"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание монолога «Что такое дружба?».</p>
+      <button class="watch" data-video="KINESCOPE_ID_DRUZHBA">Подробнее &gt;</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="num">#4</div>
+    <div class="filmframe"><img src="assets/cards/chto-dlya-tebya-molodost.jpg" alt="Что для тебя молодость?"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание монолога «Что для тебя молодость?».</p>
+      <button class="watch" data-video="KINESCOPE_ID_MOLODOST">Подробнее &gt;</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="num">#3</div>
+    <div class="filmframe"><img src="assets/cards/chto-dlya-tebya-svoboda.jpg" alt="Что для тебя свобода?"></div>
+    <div class="num runtime">00:00</div>
+    <div class="meta">
+      <p>[TODO] Короткое описание монолога «Что для тебя свобода?».</p>
+      <button class="watch" data-video="KINESCOPE_ID_SVOBODA">Подробнее &gt;</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="contact"><a href="mailto:viktor.m.sivak@gmail.com">viktor.m.sivak@gmail.com</a></div>
+  <div class="copy">© 2026 Одродок</div>
+</footer>
+
+<div class="player-overlay" id="playerOverlay">
+  <div class="player-box">
+    <button class="player-close" id="playerClose">Закрыть ✕</button>
+    <iframe id="playerFrame" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script>
+  var overlay = document.getElementById('playerOverlay');
+  var frame = document.getElementById('playerFrame');
+
+  document.querySelectorAll('.watch').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-video');
+      // Kinescope embed: замени KINESCOPE_ID_... в data-video на реальный id видео
+      frame.src = 'https://kinescope.io/embed/' + id;
+      overlay.classList.add('open');
+    });
+  });
+
+  function closePlayer(){
+    overlay.classList.remove('open');
+    frame.src = '';
+  }
+  document.getElementById('playerClose').addEventListener('click', closePlayer);
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closePlayer();
+  });
+</script>
+
+</body>
+</html>
