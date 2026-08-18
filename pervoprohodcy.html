@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Первопроходцы — Одродок</title>
+<meta name="description" content="Первопроходцы — документальный фильм о людях, которые уехали из города строить деревню на Волге.">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#f2ece0">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Одродок">
+<meta property="og:title" content="Первопроходцы">
+<meta property="og:description" content="Документальный фильм о людях, которые уехали из города строить деревню на Волге. Замысел и этюд.">
+<meta property="og:url" content="https://odrodok.ru/pervoprohodcy">
+<meta property="og:image" content="https://odrodok.ru/assets/pervoprohodcy/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<!--
+  Этюд: kinescope id в data-video у блока .player.
+  Обложка и кадры: assets/pervoprohodcy/ (cover.jpg, shot-01…shot-10.jpg).
+  Дизайн-система: IDS/элементар — жёсткие тени без блюра, нулевые радиусы.
+-->
+
+<link rel="preload" href="assets/fonts/ocra-becker.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://kinescope.io">
+
+<style>
+/* ── ШРИФТЫ ───────────────────────────────────────────────── */
+@font-face{ font-family:"Elem"; font-weight:400; font-style:normal; font-display:swap;
+  src:local("Basis Grotesque Pro"), url('assets/fonts/basis-400.woff2') format('woff2'); }
+@font-face{ font-family:"OCRABecker"; font-weight:400; font-style:normal; font-display:swap;
+  src:url('assets/fonts/ocra-becker.woff2') format('woff2'),
+      url('assets/fonts/ocra-becker.otf') format('opentype'); }
+
+/* ── ФЛЮИДНЫЙ КОРЕНЬ (IDS) ────────────────────────────────── */
+html{
+  --mobile-font-size-min:11; --mobile-font-size-max:16;
+  --desktop-font-size-min:10.5; --desktop-font-size-max:15;
+  --mobile-viewport-min:320; --mobile-desktop-breakpoint:768; --desktop-viewport-max:1500;
+  font-size:calc(var(--mobile-font-size-min) * 1px);
+}
+@media screen and (min-width:320px){html{font-size:calc(var(--mobile-font-size-min) * 1px + (var(--mobile-font-size-max) - var(--mobile-font-size-min)) * ((100vw - var(--mobile-viewport-min) * 1px) / (var(--mobile-desktop-breakpoint) - var(--mobile-viewport-min))))}}
+@media screen and (min-width:768px){html{font-size:calc(var(--desktop-font-size-min) * 1px + (var(--desktop-font-size-max) - var(--desktop-font-size-min)) * ((100vw - var(--mobile-desktop-breakpoint) * 1px) / (var(--desktop-viewport-max) - var(--mobile-desktop-breakpoint))))}}
+@media screen and (min-width:1500px){html{font-size:calc(var(--desktop-font-size-max) * 1px)}}
+
+/* ── ТОКЕНЫ ───────────────────────────────────────────────── */
+:root{
+  /* палитра: старая бумага */
+  --c-paper:  rgb(242, 236, 224);
+  --c-paper2: rgb(233, 226, 211);
+  --c-card:   rgb(253, 252, 250);   /* белая бумага блоков, как поля обложки */
+  --c-ink:    rgb(23, 21, 18);
+  --c-soft:   rgb(112, 105,  92);
+  --c-brick:  rgb(216, 66, 32);
+  --c-mark:   rgb(247, 216, 110);
+
+  --paper:var(--c-paper); --paper2:var(--c-paper2); --card:var(--c-card);
+  --ink:var(--c-ink); --soft:var(--c-soft);
+  --brick:var(--c-brick); --mark:var(--c-mark);
+  --line:color-mix(in srgb, var(--ink) 20%, transparent);
+
+  /* шкалы */
+  --density:1.5;
+  --sp-s:calc(var(--density) * .8rem);
+  --sp-m:calc(var(--density) * 1.6rem);
+  --sp-l:calc(var(--density) * 2.4rem);
+  --gap-s:.5rem; --gap-m:1rem; --gap-l:1.5rem;
+  --bw-s:1px; --bw-m:2px;
+  --fast:.1s;
+
+  /* контур набора: обводка рисуется под заливкой, буква толстеет наружу */
+  --stroke:1px;
+  --stroke-h:2px;   /* заголовок */
+
+  /* жёсткие тени без блюра, нулевые радиусы */
+  --sh:3px 3px 0 var(--ink);
+  --sh2:2px 2px 0 var(--ink);
+  /* приподнятое состояние: блок отходит от бумаги, тень растёт */
+  --sh-lift:7px 7px 0 var(--ink);
+  --sh-lift2:5px 5px 0 var(--ink);
+  --ease:cubic-bezier(.2,.7,.3,1);
+
+  --col-label:9rem;
+}
+
+*{ box-sizing:border-box; }
+
+html,body{ margin:0; padding:0; min-height:100%; }
+
+body{
+  font-family:"Elem", ui-sans-serif, system-ui, Arial, sans-serif;
+  font-weight:400;
+  font-size:1rem;
+  line-height:var(--density);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+
+  /* бумага: тёплая база + мягкая неравномерность тона */
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(120% 80% at 12% 6%,  rgba(120, 95, 55, .055), transparent 62%),
+    radial-gradient(100% 70% at 88% 94%, rgba(120, 95, 55, .05),  transparent 60%),
+    radial-gradient(70% 50% at 60% 40%,  rgba(255,255,255,.5),    transparent 70%);
+  background-attachment:fixed;
+}
+
+/* ЗЕРНО — два слоя поверх всей страницы, кликам не мешает.
+   ::before — крупное волокно бумаги, ::after — мелкая пыль. */
+body::before,
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none;
+  mix-blend-mode:multiply;
+}
+body::before{
+  z-index:2;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.22' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  opacity:.075;
+}
+body::after{
+  z-index:3;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.11;
+}
+
+a{ color:inherit; text-decoration:none; }
+img{ display:block; max-width:100%; }
+
+/* ── КАРКАС ───────────────────────────────────────────────── */
+.wrap{ width:88%; max-width:68rem; margin:0 auto; padding:0 0 var(--gap-s); position:relative; z-index:1; }
+@media (width < 768px){ .wrap{ width:100%; padding:0 calc(var(--density) * .6rem) var(--gap-s); } }
+
+/* ── ТИПОГРАФИКА ──────────────────────────────────────────── */
+h1{
+  margin:0;
+  font-family:"OCRABecker", monospace; font-weight:400;
+  /* кегль ограничен шириной экрана — длинное название не вылезет */
+  font-size:min(3.2em, 7.6vw);
+  line-height:1.02; letter-spacing:.02em; text-transform:uppercase;
+  overflow-wrap:anywhere;
+  -webkit-text-stroke:var(--stroke-h) currentColor; paint-order:stroke fill;
+}
+h2{
+  margin:0;
+  font-family:"OCRABecker", monospace; font-weight:400;
+  font-size:.8em;
+  letter-spacing:.16em; text-transform:uppercase;
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+}
+.eyebrow{
+  font-family:"OCRABecker", monospace; font-weight:400;
+  font-size:.78em; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--soft);
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+}
+
+/* ── ШАПКА И ПОДВАЛ: только знак ──────────────────────────── */
+.mark{
+  display:flex; justify-content:center;
+  padding-block:var(--gap-m);
+}
+.mark img{ height:2.4em; width:auto; }
+@media (width < 768px){ .mark img{ height:2em; } }
+
+/* ── БЛОК: подпись слева | содержимое справа ──────────────── */
+.block{
+  display:grid;
+  grid-template-columns:var(--col-label) minmax(0,1fr);
+  column-gap:var(--gap-m);
+  align-items:start;
+  margin-bottom:var(--gap-m);
+}
+.block > h2{ padding-top:.75em; text-align:right; color:var(--soft); }
+@media (width < 768px){
+  .block{ grid-template-columns:1fr; row-gap:.35rem; margin-bottom:var(--gap-m); }
+  .block > h2{ padding-top:0; text-align:left; }
+  .titlecard{ padding:var(--gap-s) var(--gap-m); }
+  .textcard{ padding:var(--gap-m); }
+}
+
+/* поверхность — белая бумага поверх бежевой */
+.card{
+  background:var(--card);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh);
+  border-radius:0;
+  transition:box-shadow .18s var(--ease), transform .18s var(--ease);
+}
+/* некликабельные карточки: чуть отходят от бумаги */
+.card:hover{ box-shadow:var(--sh-lift2); transform:translate(-1px,-1px); }
+
+/* ── ТИТУЛ ────────────────────────────────────────────────── */
+.titlecard{ padding:var(--gap-m) var(--gap-l); }
+.titlecard .meta{ margin-top:.35em; }
+
+/* ── ПЛЕЕР ────────────────────────────────────────────────── */
+/* постер-обложка снята 16:9, само видео на kinescope — 3:2,
+   поэтому после запуска контейнер меняет пропорцию */
+.player{
+  position:relative; aspect-ratio:16/9;
+  border-radius:0;
+  background:var(--c-ink);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh);
+  overflow:hidden; cursor:pointer;
+  transition:box-shadow .18s var(--ease), transform .18s var(--ease);
+}
+.player:hover{ box-shadow:var(--sh-lift); transform:translate(-2px,-2px); }
+.player:active{ box-shadow:0 0 0 var(--ink); transform:translate(3px,3px); }
+.player.playing{ aspect-ratio:3/2; cursor:default; }
+.player.playing:hover{ box-shadow:var(--sh); transform:none; }
+.player img.poster{ width:100%; height:100%; object-fit:cover; border-radius:0; }
+  .player img.poster{ height:100%; }
+.player iframe{ width:100%; height:100%; border:0; border-radius:0; display:block; }
+.player .play{
+  position:absolute; left:var(--gap-m); bottom:var(--gap-m);
+  display:flex; align-items:center; gap:.55em;
+  padding:.4em .8em .4em .45em;
+  background:var(--card); color:var(--ink);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh2);
+  font-family:"OCRABecker", monospace; font-weight:400;
+  font-size:.74em; letter-spacing:.14em; text-transform:uppercase;
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+  transition:background .18s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease);
+}
+.player .play .tri{
+  width:1.5em; height:1.5em; flex:0 0 auto;
+  background:var(--brick);
+  display:flex; align-items:center; justify-content:center;
+}
+.player .play .tri::after{
+  content:""; margin-left:.12em;
+  border-left:.45em solid var(--paper);
+  border-top:.28em solid transparent;
+  border-bottom:.28em solid transparent;
+}
+.player:hover .play{ background:var(--mark); box-shadow:var(--sh); }
+
+/* ── ТЕКСТ — OCR, всё капсом ──────────────────────────────── */
+.textcard{ padding:var(--gap-l); }
+.textcard p{
+  font-family:"OCRABecker", monospace; font-weight:400;
+  text-transform:uppercase;
+  font-size:1.1em; line-height:1.6; letter-spacing:.04em;
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+  margin:0 0 1em; max-width:52rem;
+}
+.textcard p:last-child{ margin-bottom:0; }
+
+/* ── КАДРЫ ────────────────────────────────────────────────── */
+.shots{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--gap-s); }
+@media (width < 768px){ .shots{ grid-template-columns:1fr; } }
+.shot{
+  display:block; overflow:hidden; cursor:zoom-in;
+  background:var(--c-ink);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh2);
+  transition:box-shadow .18s var(--ease), transform .18s var(--ease);
+}
+.shot img{
+  width:100%; height:auto; aspect-ratio:3/2; object-fit:cover;
+  transition:transform .5s var(--ease);
+}
+.shot:hover{ box-shadow:var(--sh-lift); transform:translate(-2px,-2px); }
+.shot:hover img{ transform:scale(1.035); }   /* кадр чуть наезжает */
+.shot:active{ box-shadow:0 0 0 var(--ink); transform:translate(3px,3px); }
+
+
+/* ── КАРУСЕЛЬ ─────────────────────────────────────────────── */
+.lb{
+  position:fixed; inset:0; z-index:100; display:none;
+  align-items:center; justify-content:center;
+  padding:4rem 1rem 5rem;
+  background:color-mix(in srgb, var(--c-ink) 92%, transparent);
+}
+.lb.open{ display:flex; }
+.lb img{
+  max-width:100%; max-height:100%; object-fit:contain;
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:3px 3px 0 rgba(0,0,0,.85);
+}
+.lb button{
+  position:absolute;
+  font-family:"OCRABecker", monospace; font-weight:400;
+  font-size:.74em;
+  letter-spacing:.14em; text-transform:uppercase;
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+  padding:.5em .9em;
+  background:var(--card); color:var(--ink);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh2);
+  border-radius:0; cursor:pointer;
+  transition:background .18s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease);
+}
+.lb button:hover{ background:var(--mark); box-shadow:var(--sh-lift2); transform:translate(-1px,-1px); }
+.lb button:active{ box-shadow:0 0 0 var(--ink); transform:translate(2px,2px); }
+.lb .prev:hover,.lb .next:hover{ transform:translateY(-50%) translate(-1px,-1px); }
+.lb .prev:active,.lb .next:active{ transform:translateY(-50%) translate(2px,2px); box-shadow:0 0 0 var(--ink); }
+.lb .close{ top:1rem; right:1rem; }
+.lb .prev{ left:1rem; top:50%; transform:translateY(-50%); }
+.lb .next{ right:1rem; top:50%; transform:translateY(-50%); }
+.lb .count{
+  position:absolute; bottom:1.6rem; left:50%; transform:translateX(-50%);
+  font-family:"OCRABecker", monospace; font-weight:400;
+  font-size:.74em; letter-spacing:.14em; color:var(--paper2);
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+}
+@media (width < 768px){
+  .lb{ padding:4rem .6rem 5rem; }
+  .lb .prev{ left:.6rem; } .lb .next{ right:.6rem; }
+}
+
+/* если система просит меньше движения — оставляем только смену тени */
+@media (prefers-reduced-motion: reduce){
+  *{ transition-duration:.01ms !important; }
+  .card:hover,.player:hover,.shot:hover,.lb button:hover{ transform:none; }
+  .shot:hover img{ transform:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="mark"><img src="assets/mark.webp" alt="Одродок"></div>
+
+  <!-- ТИТУЛ -->
+  <div class="block">
+    <h2>Одродок</h2>
+    <div class="card titlecard">
+      <h1>Первопроходцы</h1>
+    </div>
+  </div>
+
+  <!-- ЭТЮД -->
+  <div class="block">
+    <h2>Этюд</h2>
+    <div class="player" id="player" data-video="vsEnuazsTDuL6BfFUr8M1k">
+      <img class="poster" width="1600" height="900" fetchpriority="high" src="assets/pervoprohodcy/cover.webp" alt="Первопроходец — Угличи">
+      <div class="play"><span class="tri"></span>смотреть этюд</div>
+    </div>
+  </div>
+
+  <!-- ЗАМЫСЕЛ -->
+  <div class="block">
+    <h2>Замысел</h2>
+    <div class="card textcard">
+      <p>я живу в мегаполисе и мечтаю его покинуть. не знаю, чего это стоит, поэтому еду туда, где люди уже уехали.</p>
+
+      <p>на волге под угличем с нуля строят деревню — место для тех, кто решился уйти подальше от москвы. сейчас там стройка и один постоянный житель.</p>
+
+      <p>этот житель — гриша порядков. он сменил московский офис на жизнь в шоуруме: живёт в прекрасном доме, но не может пользоваться его кухней. курирует благоустройство, парк искусств, ферму и глэмпинг. по вечерам пишет музыку — год назад они с другом взяли челлендж делать по треку в день, сейчас треков 303, он не пропустил ни одного. музыку к фильму он напишет по ходу съёмок.</p>
+
+      <p>владимир степанович приехал сюда первым, пятьдесят лет назад. вокруг его дома выросла деревня черкасово, вокруг черкасово теперь строят угличи. ему 85, он известный врач, и когда я приезжал, его не было дома — он шёл по волге в большом речном путешествии. гриша только приехал, владимир степанович прожил здесь полвека.</p>
+
+      <p>валентин — архитектор, заработал состояние в москве и теперь создаёт архитектуру для себя: вместе с гришей строит глэмпинг на озере и разрабатывает собственную технологию строительства. алексей капитанов делал в москве хлебозавод и суперметалл, теперь вкладывает силы в деревню.</p>
+
+      <p>вопрос ко всем один: что человек получает, уезжая из города, и чем за это платит.</p>
+
+      <p>снимать буду наблюдением, без постановочных интервью и закадрового голоса. в этюде гриша почти не говорит — я шёл за ним и снимал, как он показывает место, пространство открывалось через него. если герои говорят, то в работе, а не на стуле перед камерой.</p>
+
+      <p>в сентябре поселюсь в угличах на несколько дней и начну снимать.</p>
+    </div>
+  </div>
+
+  <!-- КАДРЫ -->
+  <div class="block">
+    <h2>Кадры</h2>
+    <div class="shots" id="shots">
+      <a class="shot" href="#" data-i="0"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-01.webp" alt="кадр 1"></a>
+      <a class="shot" href="#" data-i="1"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-02.webp" alt="кадр 2"></a>
+      <a class="shot" href="#" data-i="2"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-03.webp" alt="кадр 3"></a>
+      <a class="shot" href="#" data-i="3"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-04.webp" alt="кадр 4"></a>
+      <a class="shot" href="#" data-i="4"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-05.webp" alt="кадр 5"></a>
+      <a class="shot" href="#" data-i="5"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-06.webp" alt="кадр 6"></a>
+      <a class="shot" href="#" data-i="6"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-07.webp" alt="кадр 7"></a>
+      <a class="shot" href="#" data-i="7"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-08.webp" alt="кадр 8"></a>
+      <a class="shot" href="#" data-i="8"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-09.webp" alt="кадр 9"></a>
+      <a class="shot" href="#" data-i="9"><img loading="lazy" decoding="async" width="1200" height="796" src="assets/pervoprohodcy/shot-10.webp" alt="кадр 10"></a>
+    </div>
+  </div>
+
+  <div class="mark"><img src="assets/mark.webp" alt="Одродок"></div>
+
+</div>
+
+<!-- КАРУСЕЛЬ -->
+<div class="lb" id="lb">
+  <button class="close" id="lbClose">закрыть ✕</button>
+  <button class="prev" id="lbPrev">←</button>
+  <button class="next" id="lbNext">→</button>
+  <img id="lbImg" src="" alt="">
+  <div class="count" id="lbCount"></div>
+</div>
+
+<script>
+(function(){
+  var player = document.getElementById('player');
+  player.addEventListener('click', function(){
+    if(player.querySelector('iframe')) return;
+    var f = document.createElement('iframe');
+    f.src = 'https://kinescope.io/embed/' + player.dataset.video + '?autoplay=1';
+    f.setAttribute('allow','autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock;');
+    f.setAttribute('frameborder','0');
+    f.setAttribute('allowfullscreen','');
+    player.innerHTML = '';
+    player.classList.add('playing');   // 16:9 постер → 3:2 видео
+    player.appendChild(f);
+  });
+
+  var srcs = [].map.call(document.querySelectorAll('#shots img'), function(i){ return i.src; });
+  var lb = document.getElementById('lb'),
+      lbImg = document.getElementById('lbImg'),
+      lbCount = document.getElementById('lbCount'),
+      cur = 0;
+
+  function show(i){
+    cur = (i + srcs.length) % srcs.length;
+    lbImg.src = srcs[cur];
+    lbCount.textContent = (cur + 1) + ' / ' + srcs.length;
+  }
+  function open(i){ show(i); lb.classList.add('open'); document.body.style.overflow='hidden'; }
+  function close(){ lb.classList.remove('open'); lbImg.src=''; document.body.style.overflow=''; }
+
+  document.querySelectorAll('#shots .shot').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); open(+a.dataset.i); });
+  });
+  document.getElementById('lbClose').addEventListener('click', close);
+  document.getElementById('lbPrev').addEventListener('click', function(e){ e.stopPropagation(); show(cur-1); });
+  document.getElementById('lbNext').addEventListener('click', function(e){ e.stopPropagation(); show(cur+1); });
+  lb.addEventListener('click', function(e){ if(e.target === lb) close(); });
+
+  document.addEventListener('keydown', function(e){
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') close();
+    if(e.key === 'ArrowLeft') show(cur-1);
+    if(e.key === 'ArrowRight') show(cur+1);
+  });
+})();
+</script>
+
+</body>
+</html>
