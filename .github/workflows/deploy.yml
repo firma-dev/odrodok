@@ -30,7 +30,11 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_DIR }}
-          protocol: ftp
+          # reg.ru отдаёт FTP только поверх TLS: с protocol: ftp сервер
+          # отвечает 530 Login incorrect даже при верном пароле
+          protocol: ftps
+          port: 21
+          security: loose
           # что не выкладывать на сайт
           exclude: |
             **/.git*
