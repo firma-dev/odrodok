@@ -233,18 +233,18 @@ body[data-open="1"] .stack{transform:translate3d(0,0,0)}
 .stack-seat{position:absolute;inset:0;perspective:2600px;perspective-origin:50% 100%}
 
 /* ── карточка ─────────────────────────────────────────────── */
-/* --d — глубина 0…9 (0 — передняя); ставит стопка, начальную — OD.render() */
+/* --d — глубина 0…9 (0 — передняя); ставит стопка, начальную — OD.render().
+   От --d зависят место ярлыка (стопка.css) и затемнение .shade */
 .c{position:absolute;left:40px;top:85px;width:1360px;height:756px;
   transform-origin:50% 100%;pointer-events:auto}
 .c[data-depth]:not([data-depth="0"]) .card{box-shadow:0 0 0 1px rgba(23,21,18,.12),0 1px 1px rgba(40,28,10,.08)}
 
-/* ярлык */
-.tab{position:absolute;top:-26px;left:calc(24px + var(--d,0) * 148px);
+/* ярлык: вид; место (left/top/translate по --d) задаёт стопка.css */
+.tab{position:absolute;
   width:140px;height:26px;padding:0 8px;border:0;cursor:pointer;
   font-size:10px;letter-spacing:0;text-align:left;white-space:nowrap;overflow:hidden;
   background:var(--card);color:var(--ink);box-shadow:0 0 0 1px rgba(23,21,18,.22)}
 .c[data-depth="0"] .tab{background:var(--ink);color:var(--paper)}
-body[data-open="0"] .c:not([data-depth="0"]) .tab{top:4px}
 
 .c-persp{position:absolute;inset:0;perspective:2400px}
 .flip{position:absolute;inset:0;transform-style:preserve-3d}
@@ -386,10 +386,9 @@ body[data-open="0"] .c:not([data-depth="0"]) .tab{top:4px}
   .stack-seat{perspective:1600px}
   .c{left:16px;top:80px;width:358px;height:756px}
   .c-persp{perspective:1600px}
-  .tab{top:-22px;left:calc(8px + var(--d,0) * 38px);width:34px;height:22px;padding:0;
+  .tab{width:34px;height:22px;padding:0;
     font-size:9px;text-align:center}
   .tab-short{display:none}
-  body[data-open="0"] .c:not([data-depth="0"]) .tab{top:2px}
 }
 
 /* ── меньше движения ──────────────────────────────────────── */

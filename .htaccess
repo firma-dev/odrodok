@@ -1,0 +1,49 @@
+# odrodok.ru — адреса, кеш, сжатие (Apache, хостинг reg.ru)
+
+AddDefaultCharset UTF-8
+
+<IfModule mod_mime.c>
+  AddType image/webp .webp
+  AddType font/woff2 .woff2
+  AddType audio/mp4  .m4a
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
+# ── адреса ────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 0. без косой в конце: /mariya/ → /mariya (иначе относительные пути css/js уедут в /mariya/…)
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([^/.]+)/$ /$1 [R=301,L]
+
+  # 1. старые страницы без .html: /pervoprohodcy → pervoprohodcy.html, /vozduh → vozduh.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} ^(.+?)/?$
+  RewriteCond %1.html -f
+  RewriteRule ^([^/.]+)/?$ $1.html [L]
+
+  # 2. карточки картотеки: /<slug> → index.html (карточку выбирает js/стопка.js)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^[^/.]+/?$ index.html [L]
+</IfModule>
+
+# ── кеш ───────────────────────────────────────────────────────
+# страницы, данные, стили и скрипты — всегда сверять (имена без версий);
+# картинки, шрифты, звуки — надолго
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|json|css|js|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(webp|jpe?g|png|ico|svg|woff2?|otf|m4a)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
+# ── сжатие ────────────────────────────────────────────────────
+# webp, woff2, m4a уже сжаты — не трогаем
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript text/javascript application/json application/manifest+json image/svg+xml font/otf
+</IfModule>
