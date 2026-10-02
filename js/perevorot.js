@@ -1,6 +1,6 @@
 /* ============================================================
-   js/переворот.js — «Смотреть» и «Кадры». Хозяин: исполнитель «переворот».
-   Пара: css/переворот.css. Модель и шина — js/данные.js (window.OD).
+   js/perevorot.js — «Смотреть» и «Кадры». Хозяин: исполнитель «переворот».
+   Пара: css/perevorot.css. Модель и шина — js/dannye.js (window.OD).
 
    Что делает (только для передней карточки: .c[data-depth="0"]):
      · [data-action="watch"] и пробел: обложка переворачивается, на обороте
@@ -174,7 +174,7 @@
     el.dataset.warm = '1';
     el.querySelectorAll('[data-role="back"] img').forEach(function (im) {
       if (im.hidden) return;
-      if (!im.getAttribute('src') && im.dataset.src) im.src = im.dataset.src;   // данные.js: кадры ждут оборота
+      if (!im.getAttribute('src') && im.dataset.src) im.src = im.dataset.src;   // dannye.js: кадры ждут оборота
       if (im.decode) im.decode().catch(function () {});
     });
   }

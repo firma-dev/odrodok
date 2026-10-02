@@ -1,6 +1,6 @@
 /* ============================================================
-   js/стопка.js — стопка картотеки. Хозяин: исполнитель «стопка».
-   Пара: css/стопка.css. Модель и шина — js/данные.js (window.OD).
+   js/stopka.js — стопка картотеки. Хозяин: исполнитель «стопка».
+   Пара: css/stopka.css. Модель и шина — js/dannye.js (window.OD).
 
    Что делает:
      · открытие/закрытие: клик «↓ потяните» [data-action="open"], колесо
@@ -44,7 +44,7 @@
   var T = { stack: 1300, seat: 220, fall: 720, back: 900, first: 2500, fade: 250, gap: 800, decode: 200 };
   var SHOW = 9;          // видны передняя + 8
   var WIN = 2;           // окно слоёв ±2
-  var OFF = { desk: -797 };   // сдвиг закрытой стопки (база.css); телефон — --off на <html> (данные.js)
+  var OFF = { desk: -797 };   // сдвиг закрытой стопки (baza.css); телефон — --off на <html> (dannye.js)
   var reduce = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
   function ms(x) { return reduce.matches ? 0 : x; }
 

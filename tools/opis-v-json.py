@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Опись работ → data/работы.json для картотеки.
+Опись работ → data/raboty.json для картотеки.
 
 Опись живёт в базе артефакта https://claude.ai/artifact/NwWqncordqwaG8ytDkwLAH
 (коллекция works, документ на работу: w01, w02 …). Кнопки «скачать» на странице
@@ -12,8 +12,8 @@
 Агент сохранит по файлу на работу: <папка>/works/w01.json, w02.json …
 Дальше:
 
-    python3 tools/опись-в-json.py <папка>/works            # пишет data/работы.json
-    python3 tools/опись-в-json.py <папка>/works --check    # только показать, что изменится
+    python3 tools/opis-v-json.py <папка>/works            # пишет data/raboty.json
+    python3 tools/opis-v-json.py <папка>/works --check    # только показать, что изменится
 
 Можно передать и один файл: JSON-массив документов или объект {id: документ}.
 
@@ -23,9 +23,9 @@
   * проставляет неразрывные пробелы тем же типографом, что и в tools/nbsp.py;
   * добавляет то, чего в описи нет, но что есть на холсте Орвина: адрес (slug),
     короткое имя для ярлыка, подписи полей у конкретной карточки (ХОЛСТ ниже);
-  * пути к файлам: обложка всегда assets/kartoteka/обложки/<slug>-780.webp
+  * пути к файлам: обложка всегда assets/kartoteka/oblozhki/<slug>-780.webp
     (+ cover_srcset с -1560.webp),
-    кадры assets/kartoteka/кадры/<slug>/<n>.webp — столько, сколько кадров
+    кадры assets/kartoteka/kadry/<slug>/<n>.webp — столько, сколько кадров
     в описи (или на холсте, если в описи нет). Файлов может ещё не быть —
     страница тогда показывает заглушку;
   * номер (no) НЕ исправляет: если у нескольких работ одинаковый номер, пишет
@@ -44,7 +44,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from nbsp import typo  # noqa: E402
 
 КОРЕНЬ = Path(__file__).resolve().parent.parent
-ВЫХОД = КОРЕНЬ / "data" / "работы.json"
+ВЫХОД = КОРЕНЬ / "data" / "raboty.json"
 ОПИСЬ = "https://claude.ai/artifact/NwWqncordqwaG8ytDkwLAH"
 
 # поля описи в порядке анкеты
@@ -54,7 +54,7 @@ from nbsp import typo  # noqa: E402
 ТЕКСТ = {"title", "type", "status", "place", "people", "authors", "cycle", "desc", "note"}
 
 # Взято с холста (project/Main.dc.html, фреймы S1…S8): адрес — slug из названия,
-# как у файлов в assets/kartoteka/ (см. assets/kartoteka/ОПИСЬ.md), short — подпись на ярлыке, labels — подписи полей именно у этой карточки,
+# как у файлов в assets/kartoteka/ (см. assets/kartoteka/OPIS.md), short — подпись на ярлыке, labels — подписи полей именно у этой карточки,
 # shots — сколько кадров есть на холсте (если в описи нет своих).
 ХОЛСТ = {
     "w01": {"slug": "kukushka-v-yasnom-pole", "short": "кукушка",
@@ -68,7 +68,7 @@ from nbsp import typo  # noqa: E402
     "w06": {"slug": "chto-dlya-tebya-molodost", "short": "молодость", "labels": {}, "shots": 0},
     "w07": {"slug": "pervoprohodec", "short": "первопроходец",
             "labels": {"people": "герой"}, "shots": 6,
-            # кадры холста уже лежат в репо байт в байт (assets/kartoteka/ОПИСЬ.md)
+            # кадры холста уже лежат в репо байт в байт (assets/kartoteka/OPIS.md)
             "shot_paths": ["assets/pervoprohodcy/shot-0%d.webp" % n for n in (1, 2, 3, 4, 5, 7)]},
     "w08": {"slug": "mariya", "short": "мария",
             "labels": {"people": "героиня", "dates": "дата"}, "shots": 0},
@@ -117,7 +117,7 @@ def собрать(документы):
         cover_id = чисто(d.get("cover"))
         shots_ids = [s for s in (d.get("shots") or []) if s]
         n = len(shots_ids) or h["shots"]
-        base = f"assets/kartoteka/обложки/{h['slug']}"
+        base = f"assets/kartoteka/oblozhki/{h['slug']}"
         w["cover"] = f"{base}-780.webp"
         w["cover_srcset"] = f"{base}-780.webp 780w, {base}-1560.webp 1560w"
         # заглушка кадров: обложка в сером и темнее, запечена заранее (-ph.webp)
@@ -125,7 +125,7 @@ def собрать(документы):
         if h.get("shot_paths") and not shots_ids:
             w["shots"] = list(h["shot_paths"])
         else:
-            w["shots"] = [f"assets/kartoteka/кадры/{h['slug']}/{i}.webp" for i in range(1, n + 1)]
+            w["shots"] = [f"assets/kartoteka/kadry/{h['slug']}/{i}.webp" for i in range(1, n + 1)]
         # откуда брать файлы: id вложений в описи (если владелец загрузил сам)
         w["src"] = {"cover": cover_id, "shots": shots_ids}
         работы.append(w)
@@ -163,7 +163,7 @@ def main(argv):
         return 1
     работы, предупр = собрать(читать(Path(files[0])))
     out = {
-        "_": "Собрано tools/опись-в-json.py из описи. Руками не править — пересобрать.",
+        "_": "Собрано tools/opis-v-json.py из описи. Руками не править — пересобрать.",
         "source": ОПИСЬ,
         "built": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "works": работы,
@@ -177,7 +177,7 @@ def main(argv):
     if check:
         old = ВЫХОД.read_text(encoding="utf-8") if ВЫХОД.exists() else ""
         strip = lambda t: "\n".join(l for l in t.splitlines() if '"built"' not in l)
-        print("без изменений" if strip(old) == strip(text) else "data/работы.json изменится")
+        print("без изменений" if strip(old) == strip(text) else "data/raboty.json изменится")
         return 0
     ВЫХОД.parent.mkdir(parents=True, exist_ok=True)
     ВЫХОД.write_text(text, encoding="utf-8")

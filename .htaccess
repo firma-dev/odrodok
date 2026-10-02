@@ -24,7 +24,7 @@ AddDefaultCharset UTF-8
   RewriteCond %1.html -f
   RewriteRule ^([^/.]+)/?$ $1.html [L]
 
-  # 2. карточки картотеки: /<slug> → index.html (карточку выбирает js/стопка.js)
+  # 2. карточки картотеки: /<slug> → index.html (карточку выбирает js/stopka.js)
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^[^/.]+/?$ index.html [L]

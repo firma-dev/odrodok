@@ -1,14 +1,14 @@
 # Сайт odrodok.ru
 
 Статический сайт, без сборщиков и зависимостей. Старые страницы открываются прямо
-из файла; картотеке (index.html) нужен локальный сервер — она грузит data/работы.json:
+из файла; картотеке (index.html) нужен локальный сервер — она грузит data/raboty.json:
 `python3 -m http.server` в корне.
 
 ## Структура
 
     site/
       index.html            → odrodok.ru        (картотека работ, ветка vrx/kartoteka)
-      css/ js/ data/        картотека: стили, скрипты, data/работы.json
+      css/ js/ data/        картотека: стили, скрипты, data/raboty.json
       pervoprohodcy.html    → odrodok.ru/pervoprohodcy
       vozduh.html           → odrodok.ru/vozduh
       favicon.ico
@@ -25,8 +25,8 @@
       src/                  исходные тексты замыслов
       src/_archive/         черновики, которые пока не в работе
       tools/nbsp.py         типограф: убирает висячие предлоги
-      tools/опись-в-json.py опись работ → data/работы.json
-      docs/дизайн/передача-картотека.md  как устроена картотека, кто за какой файл
+      tools/opis-v-json.py опись работ → data/raboty.json
+      docs/dizain/peredacha-kartoteka.md  как устроена картотека, кто за какой файл
       dist/                 архивы сборок для заливки на хостинг
 
 ## Как добавить страницу

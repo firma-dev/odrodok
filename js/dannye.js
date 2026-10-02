@@ -1,10 +1,10 @@
 /* ============================================================
-   js/данные.js — общая модель картотеки. Хозяин: каркас.
+   js/dannye.js — общая модель картотеки. Хозяин: каркас.
    Подключается первым (defer). Остальные части только читают OD
-   и подписываются на события; данные.js никого не двигает.
+   и подписываются на события; dannye.js никого не двигает.
 
    Что делает:
-     1. грузит data/работы.json → OD.works (порядок описи, order ↑);
+     1. грузит data/raboty.json → OD.works (порядок описи, order ↑);
      2. держит состояние OD.state и отражает его в атрибутах <body>;
      3. событийная шина: OD.on / OD.emit (CustomEvent "od:<имя>" на document);
      4. собирает карточку из <template id="tpl-card"> — OD.card();
@@ -33,7 +33,7 @@
   // (у отдельных карточек подписи свои — work.labels, взято с холста)
   var FIELDS = [['people', 'герои'], ['place', 'место'], ['dates', 'даты'], ['authors', 'вместе с']];
   // следы времени: 8 наборов по два, карточка i получает набор i % 8
-  // (координаты — в css/база.css по [data-w="набор-номер"])
+  // (координаты — в css/baza.css по [data-w="набор-номер"])
   var WEAR = [['yellow', 'fold'], ['coffee', 'smudge'], ['clip', 'fox'], ['crease', 'pin'],
               ['tape', 'yellow'], ['tear', 'smudge'], ['coffee', 'fox'], ['foldbl', 'crease']];
   var SHOTS_PH = 6;              // сколько кадров-заглушек, если своих нет
@@ -192,7 +192,7 @@
   // ── внутреннее ────────────────────────────────────────────
   function pad(x) { return String(x).padStart(2, '0'); }
 
-  // lazy=true: кадры — адрес в data-src, src ставит переворот.js (warm),
+  // lazy=true: кадры — адрес в data-src, src ставит perevorot.js (warm),
   // когда открывают оборот; lazy='wake': обложки — src ставит OD.wake()
   function img(el, src, onFail, lazy) {
     if (!src) { onFail(); return; }
@@ -231,7 +231,7 @@
   // масштаб сцены: геометрия холста в px, окно — любое; сцена — в safe-area.
   // Телефон: --k по ширине, высота сцены --H = окно / k (не больше 844);
   // режим <html data-fit>: full (холст) | fit (775…843) | tight (< 775:
-  // карточка с y 64, раскладка в телефон.css); ниже 632 — k по высоте.
+  // карточка с y 64, раскладка в telefon.css); ниже 632 — k по высоте.
   // Ставит --k --H --ct --ch --off; OD.stage = {k, phone, H, fit, ct, ch}.
   var PH_FIT = { full: 844, fit: 775, min: 632, top: { full: 80, fit: 80, tight: 64 }, gap: 8, card: 756, edge: 40 };
   var probe = null;
@@ -301,7 +301,7 @@
   }
 
   function load() {
-    return fetch('data/работы.json', { cache: 'no-cache' })
+    return fetch('data/raboty.json', { cache: 'no-cache' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) {
         OD.works = (j.works || []).slice().sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
@@ -310,7 +310,7 @@
       })
       .catch(function (e) {
         document.body.dataset.error = 'data';
-        console.error('[od] не загрузились data/работы.json:', e);
+        console.error('[od] не загрузились data/raboty.json:', e);
       });
   }
 

@@ -19,23 +19,23 @@
 
 <!--
   Картотека. Разметка общая для всех частей; кто что трогает —
-  docs/дизайн/передача-картотека.md, раздел «Раскладка файлов».
-  Состояние страницы — атрибуты на <body>, их ставит OD.set() из js/данные.js:
+  docs/dizain/peredacha-kartoteka.md, раздел «Раскладка файлов».
+  Состояние страницы — атрибуты на <body>, их ставит OD.set() из js/dannye.js:
     data-open="0|1"  data-sort="new|old"  data-sound="on|off"  data-phone="0|1"
 -->
 <link rel="preload" href="assets/kartoteka/ocra-bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/база.css">
+<link rel="stylesheet" href="css/baza.css">
 <!-- движение стопки и переворот первому экрану не нужны — без блокировки отрисовки -->
-<link rel="stylesheet" href="css/стопка.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/переворот.css" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="css/стопка.css"><link rel="stylesheet" href="css/переворот.css"></noscript>
-<link rel="stylesheet" href="css/телефон.css">
+<link rel="stylesheet" href="css/stopka.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/perevorot.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="css/stopka.css"><link rel="stylesheet" href="css/perevorot.css"></noscript>
+<link rel="stylesheet" href="css/telefon.css">
 
-<script src="js/данные.js" defer></script>
-<script src="js/стопка.js" defer></script>
-<script src="js/переворот.js" defer></script>
-<script src="js/звук.js" defer></script>
-<script src="js/телефон.js" defer></script>
+<script src="js/dannye.js" defer></script>
+<script src="js/stopka.js" defer></script>
+<script src="js/perevorot.js" defer></script>
+<script src="js/zvuk.js" defer></script>
+<script src="js/telefon.js" defer></script>
 </head>
 <body data-open="0" data-sort="new" data-sound="on" data-phone="0">
 
@@ -66,12 +66,12 @@
   <!-- первый экран -->
   <section class="intro" id="intro" aria-label="Виктор Сивак">
     <figure class="photo">
-      <img src="assets/kartoteka/фото-tone.webp" data-fallback="none" alt="Виктор Сивак" width="392" height="392" fetchpriority="high">
+      <img src="assets/kartoteka/foto-tone.webp" data-fallback="none" alt="Виктор Сивак" width="392" height="392" fetchpriority="high">
       <span class="photo-shade"></span>
       <figcaption>[место, год]</figcaption>
       <span class="photo-tape"></span>
     </figure>
-    <img class="sign" src="assets/kartoteka/знак-88.webp" alt="Одродок" width="44" height="44" decoding="async">
+    <img class="sign" src="assets/kartoteka/znak-88.webp" alt="Одродок" width="44" height="44" decoding="async">
     <div class="intro-text">
       <div class="eyebrow">одродок · личная картотека</div>
       <h1 class="name">Виктор<br class="only-desk"> Сивак</h1>
@@ -81,7 +81,7 @@
     </div>
   </section>
 
-  <!-- стопка: карточки вставляет OD.render() из шаблона ниже, двигает js/стопка.js -->
+  <!-- стопка: карточки вставляет OD.render() из шаблона ниже, двигает js/stopka.js -->
   <div class="stack" id="stack" aria-label="Картотека">
     <div class="stack-seat" id="stack-seat"></div>
   </div>
@@ -90,7 +90,7 @@
 </div>
 
 <!--
-  Шаблон одной карточки. Заполняет OD.card() в js/данные.js.
+  Шаблон одной карточки. Заполняет OD.card() в js/dannye.js.
   data-role — куда кладутся данные, data-action — что делает кнопка.
   Классы и роли менять только через передачу: на них стоят все части.
 -->
