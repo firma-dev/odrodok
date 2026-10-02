@@ -1,9 +1,12 @@
-# Автодеплой на хостинг reg.ru.
-# Срабатывает при push в main. Заливает содержимое репозитория по FTP
-# в каталог сайта, кроме служебных папок.
+# ОТКЛЮЧЁН. Автодеплоя больше нет: на GitHub этот workflow выключен
+# (состояние disabled_manually), триггер push убран — push в main ничего
+# не выкладывает. Выкладка — владельцем вручную, архивом через ISPmanager
+# (README.md, раздел «Выкладка»).
 #
-# Перед первым запуском добавить в GitHub:
-#   Settings → Secrets and variables → Actions → New repository secret
+# Остался только ручной запуск (workflow_dispatch) — и то лишь после
+# повторного включения workflow на GitHub. Тогда он заливает содержимое
+# репозитория по FTPS в каталог сайта, кроме служебных папок; нужны секреты
+#   Settings → Secrets and variables → Actions:
 #     FTP_SERVER    — адрес FTP (например server68.hosting.reg.ru)
 #     FTP_USERNAME  — логин FTP-пользователя
 #     FTP_PASSWORD  — его пароль
@@ -12,9 +15,7 @@
 name: Деплой на reg.ru
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:      # позволяет запустить руками из вкладки Actions
+  workflow_dispatch:      # только руками из вкладки Actions; push не запускает
 
 jobs:
   deploy:
