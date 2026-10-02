@@ -207,15 +207,51 @@
   }
 
   // масштаб сцены: геометрия холста в px, окно — любое
+  // масштаб сцены: геометрия холста в px, окно — любое; сцена — в safe-area.
+  // Телефон: --k по ширине, высота сцены --H = окно / k (не больше 844);
+  // режим <html data-fit>: full (холст) | fit (775…843) | tight (< 775:
+  // карточка с y 64, раскладка в телефон.css); ниже 632 — k по высоте.
+  // Ставит --k --H --ct --ch --off; OD.stage = {k, phone, H, fit, ct, ch}.
+  var PH_FIT = { full: 844, fit: 775, min: 632, top: { full: 80, fit: 80, tight: 64 }, gap: 8, card: 756, edge: 40 };
+  var probe = null;
+  function safe() {
+    if (!probe) {
+      probe = document.createElement('div');
+      probe.setAttribute('aria-hidden', 'true');
+      probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;' +
+        'padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
+      document.body.appendChild(probe);
+    }
+    var c = getComputedStyle(probe);
+    return { t: parseFloat(c.paddingTop) || 0, r: parseFloat(c.paddingRight) || 0,
+             b: parseFloat(c.paddingBottom) || 0, l: parseFloat(c.paddingLeft) || 0 };
+  }
+
   function fit() {
-    var w = window.innerWidth, h = window.innerHeight;
-    var phone = w <= PHONE_MAX;
-    var S = phone ? STAGE.phone : STAGE.desk;
-    var k = Math.min(w / S[0], h / S[1]);
-    var root = document.documentElement.style;
-    root.setProperty('--k', k.toFixed(4));
-    var was = OD.stage.phone;
-    OD.stage.k = k; OD.stage.phone = phone;
+    var phone = window.innerWidth <= PHONE_MAX;
+    var s = safe(), w = window.innerWidth - s.l - s.r, h = window.innerHeight - s.t - s.b;
+    var root = document.documentElement, st = root.style;
+    var was = OD.stage.phone, k, mode = null, H, ct, ch;
+    if (!phone) {
+      k = Math.min(w / STAGE.desk[0], h / STAGE.desk[1]);
+      ['--H', '--ct', '--ch', '--off'].forEach(function (v) { st.removeProperty(v); });
+      root.removeAttribute('data-fit');
+    } else {
+      k = w / STAGE.phone[0]; H = h / k;
+      if (H >= PH_FIT.full) { k = Math.min(k, h / PH_FIT.full); H = PH_FIT.full; mode = 'full'; }
+      else if (H >= PH_FIT.fit) mode = 'fit';
+      else { mode = 'tight'; if (H < PH_FIT.min) { k = h / PH_FIT.min; H = PH_FIT.min; } }
+      H = Math.floor(H);                  // сцена × k не выше окна
+      ct = PH_FIT.top[mode]; ch = Math.min(PH_FIT.card, H - ct - PH_FIT.gap);
+      st.setProperty('--H', H + 'px');
+      st.setProperty('--ct', ct + 'px');
+      st.setProperty('--ch', ch + 'px');
+      st.setProperty('--off', (PH_FIT.edge - ct - ch) + 'px');   // видна кромка 40 px
+      root.setAttribute('data-fit', mode);
+    }
+    st.setProperty('--k', k.toFixed(4));
+    var g = OD.stage;
+    g.k = k; g.phone = phone; g.H = phone ? H : STAGE.desk[1]; g.fit = mode; g.ct = ct; g.ch = ch;
     document.body.dataset.phone = phone ? '1' : '0';
     OD.emit('resize', { k: k, phone: phone, changed: was !== phone });
   }

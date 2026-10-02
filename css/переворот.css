@@ -155,7 +155,7 @@
 .thumb .thumb-label{transition:opacity .3s}
 .thumb.is-on .thumb-label{opacity:1}
 .thumb img{transition:transform .15s linear}
-.thumb:hover img{transform:translateX(-2px)}
+@media (hover:hover) and (pointer:fine){.thumb:hover img{transform:translateX(-2px)}}
 
 /* ── меньше движения: всё сразу ───────────────────────────── */
 @media (prefers-reduced-motion:reduce){

@@ -44,7 +44,7 @@
   var T = { stack: 1300, seat: 220, fall: 720, back: 900, first: 2500, fade: 250, gap: 800, decode: 200 };
   var SHOW = 9;          // видны передняя + 8
   var WIN = 2;           // окно слоёв ±2
-  var OFF = { desk: -797, phone: -796 };   // сдвиг закрытой стопки (база.css)
+  var OFF = { desk: -797 };   // сдвиг закрытой стопки (база.css); телефон — --off на <html> (данные.js)
   var reduce = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
   function ms(x) { return reduce.matches ? 0 : x; }
 
@@ -340,7 +340,7 @@
     raf = 0;
     if (!drag) return;
     if (drag.mode === 'pull') {
-      var off = OD.stage.phone ? OFF.phone : OFF.desk;
+      var off = OD.stage.phone ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--off')) || -796) : OFF.desk;
       drag.p = Math.max(0, Math.min(1, drag.dy / 520));
       stack.style.transform = 'translate3d(0,' + (off * (1 - drag.p)).toFixed(1) + 'px,0)';
       return;
