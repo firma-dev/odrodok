@@ -396,7 +396,7 @@ h2{
 <script>
 (function(){
   var player = document.getElementById('player');
-  player.addEventListener('click', function(){
+  if (player) player.addEventListener('click', function(){
     if(player.querySelector('iframe')) return;
     var f = document.createElement('iframe');
     f.src = 'https://kinescope.io/embed/' + player.dataset.video + '?autoplay=1';

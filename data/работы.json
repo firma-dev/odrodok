@@ -1,7 +1,7 @@
 {
   "_": "Собрано tools/опись-в-json.py из описи. Руками не править — пересобрать.",
   "source": "https://claude.ai/artifact/NwWqncordqwaG8ytDkwLAH",
-  "built": "2026-10-02T14:32:05Z",
+  "built": "2026-10-02T14:58:12Z",
   "works": [
     {
       "id": "w01",
@@ -28,6 +28,7 @@
       },
       "cover": "assets/kartoteka/обложки/kukushka-v-yasnom-pole-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/kukushka-v-yasnom-pole-780.webp 780w, assets/kartoteka/обложки/kukushka-v-yasnom-pole-1560.webp 1560w",
+      "cover_ph": null,
       "shots": [
         "assets/kartoteka/кадры/kukushka-v-yasnom-pole/1.webp",
         "assets/kartoteka/кадры/kukushka-v-yasnom-pole/2.webp",
@@ -72,6 +73,7 @@
       },
       "cover": "assets/kartoteka/обложки/dva-brata-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/dva-brata-780.webp 780w, assets/kartoteka/обложки/dva-brata-1560.webp 1560w",
+      "cover_ph": null,
       "shots": [
         "assets/kartoteka/кадры/dva-brata/1.webp",
         "assets/kartoteka/кадры/dva-brata/2.webp",
@@ -117,6 +119,7 @@
       },
       "cover": "assets/kartoteka/обложки/bloki-belgradskie-etyudy-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/bloki-belgradskie-etyudy-780.webp 780w, assets/kartoteka/обложки/bloki-belgradskie-etyudy-1560.webp 1560w",
+      "cover_ph": "assets/kartoteka/обложки/bloki-belgradskie-etyudy-ph.webp",
       "shots": [],
       "src": {
         "cover": null,
@@ -145,6 +148,7 @@
       "labels": {},
       "cover": "assets/kartoteka/обложки/chto-takoe-druzhba-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/chto-takoe-druzhba-780.webp 780w, assets/kartoteka/обложки/chto-takoe-druzhba-1560.webp 1560w",
+      "cover_ph": "assets/kartoteka/обложки/chto-takoe-druzhba-ph.webp",
       "shots": [],
       "src": {
         "cover": null,
@@ -173,6 +177,7 @@
       "labels": {},
       "cover": "assets/kartoteka/обложки/chto-dlya-tebya-molodost-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/chto-dlya-tebya-molodost-780.webp 780w, assets/kartoteka/обложки/chto-dlya-tebya-molodost-1560.webp 1560w",
+      "cover_ph": "assets/kartoteka/обложки/chto-dlya-tebya-molodost-ph.webp",
       "shots": [],
       "src": {
         "cover": null,
@@ -203,6 +208,7 @@
       },
       "cover": "assets/kartoteka/обложки/pervoprohodec-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/pervoprohodec-780.webp 780w, assets/kartoteka/обложки/pervoprohodec-1560.webp 1560w",
+      "cover_ph": null,
       "shots": [
         "assets/pervoprohodcy/shot-01.webp",
         "assets/pervoprohodcy/shot-02.webp",
@@ -241,6 +247,7 @@
       },
       "cover": "assets/kartoteka/обложки/mariya-780.webp",
       "cover_srcset": "assets/kartoteka/обложки/mariya-780.webp 780w, assets/kartoteka/обложки/mariya-1560.webp 1560w",
+      "cover_ph": "assets/kartoteka/обложки/mariya-ph.webp",
       "shots": [],
       "src": {
         "cover": null,

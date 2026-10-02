@@ -120,6 +120,8 @@ def собрать(документы):
         base = f"assets/kartoteka/обложки/{h['slug']}"
         w["cover"] = f"{base}-780.webp"
         w["cover_srcset"] = f"{base}-780.webp 780w, {base}-1560.webp 1560w"
+        # заглушка кадров: обложка в сером и темнее, запечена заранее (-ph.webp)
+        w["cover_ph"] = f"{base}-ph.webp" if (КОРЕНЬ / f"{base}-ph.webp").exists() else None
         if h.get("shot_paths") and not shots_ids:
             w["shots"] = list(h["shot_paths"])
         else:

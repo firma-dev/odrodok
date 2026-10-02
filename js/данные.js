@@ -134,9 +134,9 @@
         });
       });
 
-      // кадры: свои или 6 заглушек из обложки в сером
+      // кадры: свои или 6 заглушек — обложка в сером, запечённая (cover_ph), без CSS filter
       var shots = (w.shots && w.shots.length) ? w.shots : null;
-      var list = shots || Array.apply(null, Array(SHOTS_PH)).map(function () { return w.cover; });
+      var list = shots || Array.apply(null, Array(SHOTS_PH)).map(function () { return w.cover_ph || w.cover; });
       var strip = $('strip'), thumbs = $('thumbs');
       list.forEach(function (src, j) {
         var n1 = j + 1;
