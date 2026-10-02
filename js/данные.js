@@ -107,6 +107,10 @@
       var cover = $('cover'), coverPh = $('cover-ph');
       cover.alt = OD.show(w.title, '');
       coverPh.textContent = PH.cover(no);
+      if (w.cover_srcset) {                 // 780w / 1560w; ширина окна обложки × масштаб сцены
+        cover.srcset = w.cover_srcset;
+        cover.sizes = Math.round((OD.stage.phone ? 326 : 996) * OD.stage.k) + 'px';
+      }
       img(cover, w.cover, function () { cover.hidden = true; coverPh.hidden = false; });
 
       var dl = $('fields');

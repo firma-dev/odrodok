@@ -23,7 +23,8 @@
   * проставляет неразрывные пробелы тем же типографом, что и в tools/nbsp.py;
   * добавляет то, чего в описи нет, но что есть на холсте Орвина: адрес (slug),
     короткое имя для ярлыка, подписи полей у конкретной карточки (ХОЛСТ ниже);
-  * пути к файлам: обложка всегда assets/kartoteka/обложки/<slug>.webp,
+  * пути к файлам: обложка всегда assets/kartoteka/обложки/<slug>-780.webp
+    (+ cover_srcset с -1560.webp),
     кадры assets/kartoteka/кадры/<slug>/<n>.webp — столько, сколько кадров
     в описи (или на холсте, если в описи нет). Файлов может ещё не быть —
     страница тогда показывает заглушку;
@@ -52,21 +53,23 @@ from nbsp import typo  # noqa: E402
 # в этих полях текст для людей — прогоняем типограф
 ТЕКСТ = {"title", "type", "status", "place", "people", "authors", "cycle", "desc", "note"}
 
-# Взято с холста (project/Main.dc.html, файлы фреймов S1…S8): адрес — имя фрейма,
-# short — подпись на ярлыке, labels — подписи полей именно у этой карточки,
+# Взято с холста (project/Main.dc.html, фреймы S1…S8): адрес — slug из названия,
+# как у файлов в assets/kartoteka/ (см. assets/kartoteka/ОПИСЬ.md), short — подпись на ярлыке, labels — подписи полей именно у этой карточки,
 # shots — сколько кадров есть на холсте (если в описи нет своих).
 ХОЛСТ = {
-    "w01": {"slug": "kukushka", "short": "кукушка",
+    "w01": {"slug": "kukushka-v-yasnom-pole", "short": "кукушка",
             "labels": {"people": "героиня", "authors": "авторы"}, "shots": 6},
     "w02": {"slug": "dva-brata", "short": "два брата",
             "labels": {"place": "маршрут"}, "shots": 0},
-    "w03": {"slug": "bloki", "short": "блоки",
+    "w03": {"slug": "bloki-belgradskie-etyudy", "short": "блоки",
             "labels": {"people": "героиня", "dates": "дата"}, "shots": 0},
-    "w04": {"slug": "druzhba", "short": "дружба", "labels": {}, "shots": 0},
-    "w05": {"slug": "svoboda", "short": "свобода", "labels": {}, "shots": 0},
-    "w06": {"slug": "molodost", "short": "молодость", "labels": {}, "shots": 0},
+    "w04": {"slug": "chto-takoe-druzhba", "short": "дружба", "labels": {}, "shots": 0},
+    "w05": {"slug": "chto-dlya-tebya-svoboda", "short": "свобода", "labels": {}, "shots": 0},
+    "w06": {"slug": "chto-dlya-tebya-molodost", "short": "молодость", "labels": {}, "shots": 0},
     "w07": {"slug": "pervoprohodec", "short": "первопроходец",
-            "labels": {"people": "герой"}, "shots": 6},
+            "labels": {"people": "герой"}, "shots": 6,
+            # кадры холста уже лежат в репо байт в байт (assets/kartoteka/ОПИСЬ.md)
+            "shot_paths": ["assets/pervoprohodcy/shot-0%d.webp" % n for n in (1, 2, 3, 4, 5, 7)]},
     "w08": {"slug": "mariya", "short": "мария",
             "labels": {"people": "героиня", "dates": "дата"}, "shots": 0},
 }
@@ -114,8 +117,13 @@ def собрать(документы):
         cover_id = чисто(d.get("cover"))
         shots_ids = [s for s in (d.get("shots") or []) if s]
         n = len(shots_ids) or h["shots"]
-        w["cover"] = f"assets/kartoteka/обложки/{h['slug']}.webp"
-        w["shots"] = [f"assets/kartoteka/кадры/{h['slug']}/{i}.webp" for i in range(1, n + 1)]
+        base = f"assets/kartoteka/обложки/{h['slug']}"
+        w["cover"] = f"{base}-780.webp"
+        w["cover_srcset"] = f"{base}-780.webp 780w, {base}-1560.webp 1560w"
+        if h.get("shot_paths") and not shots_ids:
+            w["shots"] = list(h["shot_paths"])
+        else:
+            w["shots"] = [f"assets/kartoteka/кадры/{h['slug']}/{i}.webp" for i in range(1, n + 1)]
         # откуда брать файлы: id вложений в описи (если владелец загрузил сам)
         w["src"] = {"cover": cover_id, "shots": shots_ids}
         работы.append(w)

@@ -1,11 +1,11 @@
 {
   "_": "Собрано tools/опись-в-json.py из описи. Руками не править — пересобрать.",
   "source": "https://claude.ai/artifact/NwWqncordqwaG8ytDkwLAH",
-  "built": "2026-10-02T14:15:41Z",
+  "built": "2026-10-02T14:32:05Z",
   "works": [
     {
       "id": "w01",
-      "slug": "kukushka",
+      "slug": "kukushka-v-yasnom-pole",
       "order": 1,
       "no": "№1",
       "title": "Кукушка в ясном поле",
@@ -26,14 +26,15 @@
         "people": "героиня",
         "authors": "авторы"
       },
-      "cover": "assets/kartoteka/обложки/kukushka.webp",
+      "cover": "assets/kartoteka/обложки/kukushka-v-yasnom-pole-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/kukushka-v-yasnom-pole-780.webp 780w, assets/kartoteka/обложки/kukushka-v-yasnom-pole-1560.webp 1560w",
       "shots": [
-        "assets/kartoteka/кадры/kukushka/1.webp",
-        "assets/kartoteka/кадры/kukushka/2.webp",
-        "assets/kartoteka/кадры/kukushka/3.webp",
-        "assets/kartoteka/кадры/kukushka/4.webp",
-        "assets/kartoteka/кадры/kukushka/5.webp",
-        "assets/kartoteka/кадры/kukushka/6.webp"
+        "assets/kartoteka/кадры/kukushka-v-yasnom-pole/1.webp",
+        "assets/kartoteka/кадры/kukushka-v-yasnom-pole/2.webp",
+        "assets/kartoteka/кадры/kukushka-v-yasnom-pole/3.webp",
+        "assets/kartoteka/кадры/kukushka-v-yasnom-pole/4.webp",
+        "assets/kartoteka/кадры/kukushka-v-yasnom-pole/5.webp",
+        "assets/kartoteka/кадры/kukushka-v-yasnom-pole/6.webp"
       ],
       "src": {
         "cover": "f26d9a8fee60d05919f354aa7de4beb8",
@@ -69,7 +70,8 @@
       "labels": {
         "place": "маршрут"
       },
-      "cover": "assets/kartoteka/обложки/dva-brata.webp",
+      "cover": "assets/kartoteka/обложки/dva-brata-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/dva-brata-780.webp 780w, assets/kartoteka/обложки/dva-brata-1560.webp 1560w",
       "shots": [
         "assets/kartoteka/кадры/dva-brata/1.webp",
         "assets/kartoteka/кадры/dva-brata/2.webp",
@@ -92,7 +94,7 @@
     },
     {
       "id": "w03",
-      "slug": "bloki",
+      "slug": "bloki-belgradskie-etyudy",
       "order": 3,
       "no": "№3",
       "title": "Блоки. Белградские этюды",
@@ -113,7 +115,8 @@
         "people": "героиня",
         "dates": "дата"
       },
-      "cover": "assets/kartoteka/обложки/bloki.webp",
+      "cover": "assets/kartoteka/обложки/bloki-belgradskie-etyudy-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/bloki-belgradskie-etyudy-780.webp 780w, assets/kartoteka/обложки/bloki-belgradskie-etyudy-1560.webp 1560w",
       "shots": [],
       "src": {
         "cover": null,
@@ -122,7 +125,7 @@
     },
     {
       "id": "w04",
-      "slug": "druzhba",
+      "slug": "chto-takoe-druzhba",
       "order": 4,
       "no": "№3",
       "title": "Что такое дружба?",
@@ -140,7 +143,8 @@
       "note": null,
       "short": "дружба",
       "labels": {},
-      "cover": "assets/kartoteka/обложки/druzhba.webp",
+      "cover": "assets/kartoteka/обложки/chto-takoe-druzhba-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/chto-takoe-druzhba-780.webp 780w, assets/kartoteka/обложки/chto-takoe-druzhba-1560.webp 1560w",
       "shots": [],
       "src": {
         "cover": null,
@@ -149,7 +153,7 @@
     },
     {
       "id": "w06",
-      "slug": "molodost",
+      "slug": "chto-dlya-tebya-molodost",
       "order": 6,
       "no": "№4",
       "title": "Что для тебя молодость?",
@@ -167,7 +171,8 @@
       "note": null,
       "short": "молодость",
       "labels": {},
-      "cover": "assets/kartoteka/обложки/molodost.webp",
+      "cover": "assets/kartoteka/обложки/chto-dlya-tebya-molodost-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/chto-dlya-tebya-molodost-780.webp 780w, assets/kartoteka/обложки/chto-dlya-tebya-molodost-1560.webp 1560w",
       "shots": [],
       "src": {
         "cover": null,
@@ -196,14 +201,15 @@
       "labels": {
         "people": "герой"
       },
-      "cover": "assets/kartoteka/обложки/pervoprohodec.webp",
+      "cover": "assets/kartoteka/обложки/pervoprohodec-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/pervoprohodec-780.webp 780w, assets/kartoteka/обложки/pervoprohodec-1560.webp 1560w",
       "shots": [
-        "assets/kartoteka/кадры/pervoprohodec/1.webp",
-        "assets/kartoteka/кадры/pervoprohodec/2.webp",
-        "assets/kartoteka/кадры/pervoprohodec/3.webp",
-        "assets/kartoteka/кадры/pervoprohodec/4.webp",
-        "assets/kartoteka/кадры/pervoprohodec/5.webp",
-        "assets/kartoteka/кадры/pervoprohodec/6.webp"
+        "assets/pervoprohodcy/shot-01.webp",
+        "assets/pervoprohodcy/shot-02.webp",
+        "assets/pervoprohodcy/shot-03.webp",
+        "assets/pervoprohodcy/shot-04.webp",
+        "assets/pervoprohodcy/shot-05.webp",
+        "assets/pervoprohodcy/shot-07.webp"
       ],
       "src": {
         "cover": null,
@@ -233,7 +239,8 @@
         "people": "героиня",
         "dates": "дата"
       },
-      "cover": "assets/kartoteka/обложки/mariya.webp",
+      "cover": "assets/kartoteka/обложки/mariya-780.webp",
+      "cover_srcset": "assets/kartoteka/обложки/mariya-780.webp 780w, assets/kartoteka/обложки/mariya-1560.webp 1560w",
       "shots": [],
       "src": {
         "cover": null,
