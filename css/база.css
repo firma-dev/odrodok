@@ -87,7 +87,7 @@ body{
   background-color:var(--paper);
   /* запечённая бумага с зерном, без наложения; виньетка — как на холсте */
   background-image:
-    url("../assets/kartoteka/бумага-зерно.webp"),
+    url("../assets/kartoteka/бумага-страница.webp"),
     radial-gradient(120% 80% at 12% 6%,rgba(120,95,55,.08),transparent 62%),
     radial-gradient(100% 70% at 88% 94%,rgba(120,95,55,.09),transparent 60%);
   background-size:420px,100% 100%,100% 100%;
@@ -260,7 +260,7 @@ body[data-open="0"] .c:not([data-depth="0"]) .tab{top:4px}
     linear-gradient(to bottom,transparent 55px,var(--redline) 55px,var(--redline) 57px,transparent 57px),
     linear-gradient(to bottom,var(--card) 0,var(--card) 56px,transparent 56px),
     repeating-linear-gradient(to bottom,transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px),
-    url("../assets/kartoteka/бумага-зерно.webp");
+    url("../assets/kartoteka/бумага-карточка.webp");
   background-size:auto,auto,auto,420px;
   border-bottom:3px solid var(--edge);
   box-shadow:0 0 0 1px rgba(23,21,18,.16),0 1px 1px rgba(40,28,10,.18),0 4px 6px rgba(40,28,10,.10),0 14px 28px rgba(40,28,10,.14);
