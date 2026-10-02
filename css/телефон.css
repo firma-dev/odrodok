@@ -1,19 +1,162 @@
 /* ============================================================
-   css/телефон.css — ЗАГОТОВКА. Хозяин: исполнитель «телефон».
-   Пара (если понадобится): js/телефон.js.
+   css/телефон.css — раскладка картотеки на телефоне. Хозяин: «телефон».
+   Пара: js/телефон.js (масштаб и высота сцены, ужатие по высоте).
 
-   Раскладка карточки на ширине ≤ 767 px по фрейму «Прототип — телефон»
-   390×844. Сцена, первый экран, коробка карточки (.c 358×756 в x16 y80)
-   и ярлыки 34×22 уже в база.css — здесь только внутренность карточки:
-     · шапка: тип·хрон·статус 9px в строке 0, «в картотеке с» в строке 1;
-     · обложка .cover-box 326×183 в x16 y84, фотоуглы 14 px;
-     · кнопки .actions в y308, две по ширине (flex 1), высота 52;
-     · поля .fields в y392 строками «подпись 84 px | значение» 9/11 px;
-     · описание .desc в y532, 326×140, 11 px;
-     · пометка .mark x20 y690; номер листа справа y700 8 px; дырка 12 px по центру;
-     · оборот: окно кадров 326×183, стрелки ← → в y308, лента миниатюр
-       96×54 горизонтально в y392 (рамка 104×62 стоит, едет лента),
-       «↺ К обложке» во всю ширину в y532;
-     · следы времени — свои координаты для 358×756 (см. холст, Mobile).
-   Всё — внутри @media (max-width:767px).
+   Источник — фрейм «Прототип — телефон» 390×844 (холст, Mobile.dc.html).
+
+   НИЗКИЕ ТЕЛЕФОНЫ. Сцена 390 × --H: ширина всегда 390 и --k по ширине
+   окна (полей по бокам нет), высота --H = высота окна / --k, не больше 844.
+   Режим — <html data-fit>, ставит телефон.js:
+     full   — окно 19,5:9 и выше: раскладка холста, --H 844;
+     fit    — --H 775…843: раскладка холста, описание короче;
+     tight  — --H < 775 (SE, Safari с панелями): карточка с y 64,
+              кнопки и поля на строку выше, пометка — в строке номера листа;
+              ниже 632 сцена дальше не ужимается: --k по высоте, по бокам поля.
+   Описание прокручивается внутри карточки, его высоту кратно 28 ставит
+   телефон.js (строки не режутся пополам).
+   Переменные на <html> (телефон.js):
+     --H высота сцены; --ct/--ch верх и высота карточки; --off сдвиг
+     закрытой стопки (видна кромка 40 px); --ps масштаб фото первого экрана;
+     --sign-dy/--text-dy сдвиг знака и текста первого экрана.
+
+   Safari: движутся только transform/opacity; без filter, blend,
+   text-shadow, text-stroke. Шрифт не меньше 11 px (пометка крупнее).
+   Перспектива переворота — в @keyframes *-m (переворот.css), здесь её нет.
    ============================================================ */
+
+/* ── вырез и полоса «домой»: сцена в безопасной области (и в альбомной) ── */
+.stage{
+  left:calc(50% + (env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)) / 2);
+  top:calc(50% + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) / 2);
+}
+.rail{bottom:calc(40px * var(--k) + env(safe-area-inset-bottom,0px))}
+.rail-l{left:calc(14px * var(--k) + env(safe-area-inset-left,0px))}
+.rail-r{right:calc(14px * var(--k) + env(safe-area-inset-right,0px))}
+
+/* ── сенсорные экраны: наведение только у мыши ─────────────
+   (hover:hover) and (pointer:fine) — наведение из база.css, стопка.css
+   и переворот.css остаётся; на пальце гасим, нажатие (:active) остаётся. */
+@media not all and (hover:hover) and (pointer:fine){
+  a:hover{color:var(--ink)}
+  .btn-white:hover{background:linear-gradient(#FFFFFF,#EDE8DE)}
+  .btn-orange:hover{background:linear-gradient(#F26A3E,var(--sign2))}
+  .pull:hover,.tab:hover,.thumb:hover img{transform:none}
+  .c img{-webkit-touch-callout:none}
+}
+
+@media (max-width:767px){
+  html,body{height:100%}
+  @supports (height:100dvh){html,body{height:100dvh}}
+
+  /* сцена: высота — из телефон.js */
+  .stage{height:var(--H,844px)}
+
+  /* поля экрана */
+  .rail{bottom:calc(24px * var(--k) + env(safe-area-inset-bottom,0px));
+    font-size:calc(11px * var(--k));line-height:1;letter-spacing:.1em}
+  .rail-l{left:calc(2px * var(--k) + env(safe-area-inset-left,0px))}
+  .rail-r{right:calc(2px * var(--k) + env(safe-area-inset-right,0px))}
+
+  /* ── верхняя панель: 11 px; поле нажатия шире кнопки ─────── */
+  .btn-orange,.sw-opt{font-size:11px;letter-spacing:.04em}
+  .btn-orange,.btn-icon{position:relative}
+  .btn-orange::after,.btn-icon::after{content:"";position:absolute;left:-4px;right:-4px;top:-10px;bottom:-12px}
+
+  /* ── первый экран: ужатие по высоте (телефон.js) ──────────── */
+  .photo{transform:rotate(-1.2deg) scale(var(--ps,1));transform-origin:50% 0}
+  .photo figcaption{font-size:11px}
+  .sign{transform:translateY(var(--sign-dy,0px))}
+  .intro-text{transform:translateY(var(--text-dy,0px))}
+
+  /* ── стопка и карточка: высота по сцене ─────────────────── */
+  .stack{transform:translate3d(0,var(--off,-796px),0)}
+  .c{top:var(--ct,80px);height:var(--ch,756px)}
+  .tab{font-size:11px}
+
+  /* ── лицо карточки ──────────────────────────────────────────
+     Поля, описание и пометка идут столбцом, как на холсте: лицо — flex,
+     всё остальное на нём стоит абсолютно. */
+  .face.front{display:flex;flex-direction:column;align-items:stretch;padding:392px 16px 53px}  /* 53 + кромка 3 = 56 */
+  .hdr-l,.hdr-r{left:16px;right:16px;max-width:none;font-size:11px;transform:translateY(var(--sit-s))}
+  .hdr-l{top:0}
+  .hdr-r{top:28px;text-align:left}
+
+  .cover-box{left:16px;top:84px;width:326px;height:183px}
+  .cover-front{box-shadow:0 1px 1px rgba(23,21,18,.3),1px 2px 4px rgba(40,28,10,.25)}
+  .corner{width:14px;height:14px}
+  .corner.tl{left:-5px;top:-5px}
+  .corner.tr{right:-5px;top:-5px}
+  .corner.bl{left:-5px;bottom:-5px}
+  .corner.br{right:-5px;bottom:-5px}
+  .ph{font-size:11px}
+
+  /* плеер на обороте обложки 326×183 */
+  .player-note{left:12px;top:10px}
+  .player-bar{left:12px;right:12px;bottom:10px;gap:8px}
+  .player-track{height:2px}
+
+  .actions{left:16px;top:308px;width:326px;gap:12px}
+  .actions .btn-white{flex:1 1 0;width:auto;padding:0}
+
+  .fields{position:static;flex:none;width:auto;display:grid;grid-template-columns:84px minmax(0,1fr);column-gap:12px}
+  .fields dt{font-size:11px}
+  .fields dd{font-size:11px;white-space:normal;height:auto;overflow:visible;overflow-wrap:anywhere}
+  .desc{position:static;flex:0 1 auto;min-height:0;width:auto;height:auto;margin-top:28px;font-size:11px;
+    overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+  .mark{position:relative;left:auto;top:auto;flex:none;align-self:flex-start;margin:14px 0 0 4px;font-size:24px}
+  /* описание длинное (или режим tight) — пометка в строке номера листа, слева */
+  .c[data-mark="low"] .mark{position:absolute;left:20px;bottom:22px;margin:0}
+
+  .sheet{right:16px;top:auto;bottom:28px;height:28px;display:block;line-height:28px;
+    font-size:11px;transform:translateY(var(--sit-s))}
+  .hole{left:171px;bottom:12px;width:12px;height:12px}
+
+  /* ── оборот: кадры ──────────────────────────────────────────
+     Лента кадров едет вертикально шагом 183 (как на холсте), миниатюры —
+     горизонтально: рамка стоит, лента сдвигается (115 − k·106).
+     --shot ставит переворот.js на .c. */
+  .c{--shot-h:183px;--thumb-step:0px}
+  .shots-window{left:16px;top:84px;width:326px;height:183px;
+    box-shadow:0 1px 1px rgba(23,21,18,.3),1px 2px 4px rgba(40,28,10,.25)}
+  .shot{height:183px}
+  .shot-ph{right:8px;top:8px;font-size:11px}
+  .shots-nav{left:16px;top:308px;width:326px}
+  .counter{font-size:11px}
+  .thumbs{left:16px;top:392px;width:326px;height:72px;overflow:hidden;
+    flex-direction:row;align-items:flex-start;gap:10px;padding-top:8px}
+  .thumb{flex:none;width:96px;opacity:.55;
+    transform:translate3d(calc(115px - var(--shot,0) * 106px),0,0);
+    transition:transform var(--t-strip) var(--e-strip),opacity .3s}
+  .thumb.is-on{opacity:1}
+  .thumb img{width:96px;height:54px}
+  .thumb-label{display:none}
+  .thumbs-frame{left:111px;top:4px;width:104px;height:62px;z-index:1}
+  .back .actions{top:532px}
+  .back .actions .btn-white{flex:1 1 auto}
+  /* на холсте у оборота нет номера листа и следов времени */
+  .back .sheet,.back .wear{display:none}
+
+  /* ── следы времени: места на карточке 358 × --ch ───────────── */
+  [data-w="1-0"]{left:250px;top:calc(var(--ch,756px) - 156px)}
+  [data-w="1-1"]{left:20px;top:calc(var(--ch,756px) - 66px)}
+  [data-w="2-0"]{left:290px}
+  [data-w="2-1"]{left:180px;top:calc(var(--ch,756px) - 136px)}
+  [data-w="3-0"]{top:380px}
+  [data-w="3-1"]{left:200px;top:18px}
+  [data-w="4-0"]{left:150px}
+  [data-w="5-0"]{left:240px}
+  [data-w="5-1"]{left:260px;top:60px}
+  [data-w="6-0"]{left:290px;top:-50px}
+  [data-w="6-1"]{left:20px;top:calc(var(--ch,756px) - 116px)}
+
+  /* ── tight: SE, Safari с панелями ─────────────────────────
+     Без пустой строки под обложкой и между полями и описанием;
+     пометка — в строке номера листа (телефон.js: .c[data-mark="low"]). */
+  html[data-fit="tight"] .face.front{padding-top:336px}
+  html[data-fit="tight"] .front .actions{top:280px}
+  html[data-fit="tight"] .desc{margin-top:0}
+  html[data-fit="tight"] .shots-nav{top:280px}
+  html[data-fit="tight"] .thumbs{top:336px}
+  html[data-fit="tight"] .back .actions{top:420px}
+  html[data-fit="tight"] [data-w="3-0"]{top:330px}
+}
