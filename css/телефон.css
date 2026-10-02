@@ -20,7 +20,8 @@
      сдвиг знака и текста первого экрана.
 
    Safari: движутся только transform/opacity; без filter, blend,
-   text-shadow, text-stroke. Шрифт не меньше 11 px (пометка крупнее).
+   text-shadow, text-stroke. Шрифт на экране не меньше 11 px: --f11 =
+   max(11px, 11px / k) в сцене (пометка крупнее).
    Перспектива переворота — в @keyframes *-m (переворот.css), здесь её нет.
    ============================================================ */
 
@@ -45,6 +46,9 @@
 }
 
 @media (max-width:767px){
+  /* мелкий текст: на экране не меньше 11 px при любом масштабе сцены
+     (сцена ужата scale(--k) — кегль в сцене 11 / k) */
+  :root{--f11:max(11px,calc(11px / var(--k)))}
   html,body{height:100%}
   @supports (height:100dvh){html,body{height:100dvh}}
 
@@ -53,31 +57,34 @@
 
   /* поля экрана */
   .rail{bottom:calc(24px * var(--k) + env(safe-area-inset-bottom,0px));
-    font-size:calc(11px * var(--k));line-height:1;letter-spacing:.1em}
+    font-size:max(11px,calc(11px * var(--k)));line-height:1;letter-spacing:.1em}
   .rail-l{left:calc(2px * var(--k) + env(safe-area-inset-left,0px))}
   .rail-r{right:calc(2px * var(--k) + env(safe-area-inset-right,0px))}
 
   /* ── верхняя панель: 11 px; поле нажатия шире кнопки ─────── */
-  .btn-orange,.sw-opt{font-size:11px;letter-spacing:.04em}
+  .btn-orange,.sw-opt{font-size:var(--f11);letter-spacing:.04em}
   .btn-orange,.btn-icon{position:relative}
   .btn-orange::after,.btn-icon::after{content:"";position:absolute;left:-4px;right:-4px;top:-10px;bottom:-12px}
 
   /* ── первый экран: ужатие по высоте (телефон.js) ──────────── */
   .photo{transform:rotate(-1.2deg) scale(var(--ps,1));transform-origin:50% 0}
-  .photo figcaption{font-size:11px}
+  .photo figcaption,.intro-text p,.pull{font-size:var(--f11)}
   .sign{transform:translateY(var(--sign-dy,0px))}
   .intro-text{transform:translateY(var(--text-dy,0px))}
 
   /* ── стопка и карточка: высота по сцене ─────────────────── */
   .stack{transform:translate3d(0,var(--off,-796px),0)}
   .c{top:var(--ct,80px);height:var(--ch,756px)}
-  .tab{font-size:11px}
+  .tab{font-size:var(--f11)}
 
   /* ── лицо карточки ──────────────────────────────────────────
      Поля, описание и пометка идут столбцом, как на холсте: лицо — flex,
      всё остальное на нём стоит абсолютно. */
-  .face.front{display:flex;flex-direction:column;align-items:stretch;padding:392px 16px 53px}  /* 53 + кромка 3 = 56 */
-  .hdr-l,.hdr-r{left:16px;right:16px;max-width:none;font-size:11px;transform:translateY(var(--sit-s))}
+  .face.front{display:flex;flex-direction:column;align-items:stretch;padding:392px 16px 53px}
+  /* обрезка по лицу: текст описания под прокруткой не считается видимым
+     (LCP в Chrome меряет текст описания без его собственной обрезки) */
+  .face{overflow:hidden}  /* 53 + кромка 3 = 56 */
+  .hdr-l,.hdr-r{left:16px;right:16px;max-width:none;font-size:var(--f11);transform:translateY(var(--sit-s))}
   .hdr-l{top:0}
   .hdr-r{top:28px;text-align:left}
 
@@ -88,27 +95,27 @@
   .corner.tr{right:-5px;top:-5px}
   .corner.bl{left:-5px;bottom:-5px}
   .corner.br{right:-5px;bottom:-5px}
-  .ph{font-size:11px}
+  .ph{font-size:var(--f11)}
 
   /* плеер на обороте обложки 326×183 */
-  .player-note{left:12px;top:10px}
-  .player-bar{left:12px;right:12px;bottom:10px;gap:8px}
+  .player-note{left:12px;top:10px;font-size:var(--f11)}
+  .player-bar{left:12px;right:12px;bottom:10px;gap:8px;font-size:var(--f11)}
   .player-track{height:2px}
 
   .actions{left:16px;top:308px;width:326px;gap:12px}
   .actions .btn-white{flex:1 1 0;width:auto;padding:0}
 
   .fields{position:static;flex:none;width:auto;display:grid;grid-template-columns:84px minmax(0,1fr);column-gap:12px}
-  .fields dt{font-size:11px}
-  .fields dd{font-size:11px;white-space:normal;height:auto;overflow:visible;overflow-wrap:anywhere}
-  .desc{position:static;flex:0 1 auto;min-height:0;width:auto;height:auto;margin-top:28px;font-size:11px;
+  .fields dt{font-size:var(--f11)}
+  .fields dd{font-size:var(--f11);white-space:normal;height:auto;overflow:visible;overflow-wrap:anywhere}
+  .desc{position:static;flex:0 1 auto;min-height:0;width:auto;height:auto;margin-top:28px;font-size:var(--f11);
     overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
   .mark{position:relative;left:auto;top:auto;flex:none;align-self:flex-start;margin:14px 0 0 4px;font-size:24px}
   /* описание длинное (или режим tight) — пометка в строке номера листа, слева */
   .c[data-mark="low"] .mark{position:absolute;left:20px;bottom:22px;margin:0}
 
   .sheet{right:16px;top:auto;bottom:28px;height:28px;display:block;line-height:28px;
-    font-size:11px;transform:translateY(var(--sit-s))}
+    font-size:var(--f11);transform:translateY(var(--sit-s))}
   .hole{left:171px;bottom:12px;width:12px;height:12px}
 
   /* ── оборот: кадры ──────────────────────────────────────────
@@ -119,9 +126,9 @@
   .shots-window{left:16px;top:84px;width:326px;height:183px;
     box-shadow:0 1px 1px rgba(23,21,18,.3),1px 2px 4px rgba(40,28,10,.25)}
   .shot{height:183px}
-  .shot-ph{right:8px;top:8px;font-size:11px}
+  .shot-ph{right:8px;top:8px;font-size:var(--f11)}
   .shots-nav{left:16px;top:308px;width:326px}
-  .counter{font-size:11px}
+  .counter{font-size:var(--f11)}
   .thumbs{left:16px;top:392px;width:326px;height:72px;overflow:hidden;
     flex-direction:row;align-items:flex-start;gap:10px;padding-top:8px}
   .thumb{flex:none;width:96px;opacity:.55;

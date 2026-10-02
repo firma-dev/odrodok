@@ -174,7 +174,7 @@
     el.dataset.warm = '1';
     el.querySelectorAll('[data-role="back"] img').forEach(function (im) {
       if (im.hidden) return;
-      im.loading = 'eager';
+      if (!im.getAttribute('src') && im.dataset.src) im.src = im.dataset.src;   // данные.js: кадры ждут оборота
       if (im.decode) im.decode().catch(function () {});
     });
   }

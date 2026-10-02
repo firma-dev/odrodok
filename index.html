@@ -23,9 +23,12 @@
   Состояние страницы — атрибуты на <body>, их ставит OD.set() из js/данные.js:
     data-open="0|1"  data-sort="new|old"  data-sound="on|off"  data-phone="0|1"
 -->
+<link rel="preload" href="assets/kartoteka/ocra-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/база.css">
-<link rel="stylesheet" href="css/стопка.css">
-<link rel="stylesheet" href="css/переворот.css">
+<!-- движение стопки и переворот первому экрану не нужны — без блокировки отрисовки -->
+<link rel="stylesheet" href="css/стопка.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/переворот.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="css/стопка.css"><link rel="stylesheet" href="css/переворот.css"></noscript>
 <link rel="stylesheet" href="css/телефон.css">
 
 <script src="js/данные.js" defer></script>
@@ -63,12 +66,12 @@
   <!-- первый экран -->
   <section class="intro" id="intro" aria-label="Виктор Сивак">
     <figure class="photo">
-      <img src="assets/kartoteka/фото-tone.webp" data-fallback="none" alt="Виктор Сивак" width="392" height="392">
+      <img src="assets/kartoteka/фото-tone.webp" data-fallback="none" alt="Виктор Сивак" width="392" height="392" fetchpriority="high">
       <span class="photo-shade"></span>
       <figcaption>[место, год]</figcaption>
       <span class="photo-tape"></span>
     </figure>
-    <img class="sign" src="assets/mark.webp" alt="Одродок" width="44" height="44">
+    <img class="sign" src="assets/kartoteka/знак-88.webp" alt="Одродок" width="44" height="44" decoding="async">
     <div class="intro-text">
       <div class="eyebrow">одродок · личная картотека</div>
       <h1 class="name">Виктор<br class="only-desk"> Сивак</h1>
@@ -83,7 +86,7 @@
     <div class="stack-seat" id="stack-seat"></div>
   </div>
 
-  <button type="button" class="pull" id="pull" data-action="open" aria-label="Вытянуть картотеку">↓ потяните</button>
+  <button type="button" class="pull" id="pull" data-action="open">↓ потяните</button>
 </div>
 
 <!--

@@ -107,11 +107,13 @@
       var cover = $('cover'), coverPh = $('cover-ph');
       cover.alt = OD.show(w.title, '');
       coverPh.textContent = PH.cover(no);
+      // обложки ждут первого действия (OD.wake): закрытая стопка — вне окна,
+      // первому экрану полоса не нужна
       if (w.cover_srcset) {                 // 780w / 1560w; ширина окна обложки × масштаб сцены
-        cover.srcset = w.cover_srcset;
+        cover.dataset.srcset = w.cover_srcset;
         cover.sizes = Math.round((OD.stage.phone ? 326 : 996) * OD.stage.k) + 'px';
       }
-      img(cover, w.cover, function () { cover.hidden = true; coverPh.hidden = false; });
+      img(cover, w.cover, function () { cover.hidden = true; coverPh.hidden = false; }, 'wake');
 
       var dl = $('fields');
       FIELDS.forEach(function (f) {
@@ -190,13 +192,32 @@
   // ── внутреннее ────────────────────────────────────────────
   function pad(x) { return String(x).padStart(2, '0'); }
 
+  // lazy=true: кадры — адрес в data-src, src ставит переворот.js (warm),
+  // когда открывают оборот; lazy='wake': обложки — src ставит OD.wake()
   function img(el, src, onFail, lazy) {
     if (!src) { onFail(); return; }
-    if (lazy) el.loading = 'lazy';      // кадры грузятся, когда оборот открыт
     el.addEventListener('error', onFail, { once: true });
     el.decoding = 'async';
+    if (lazy === 'wake' && !awake) { el.dataset.src = src; return; }
+    if (lazy === 'wake' && el.dataset.srcset) { el.srcset = el.dataset.srcset; delete el.dataset.srcset; }
+    if (lazy && lazy !== 'wake') { el.dataset.src = src; return; }
     el.src = src;
   }
+
+  // обложки: грузить с первого действия (касание, клавиша, колесо) или открытия
+  var awake = false;
+  OD.wake = function () {
+    if (awake) return;
+    awake = true;
+    document.querySelectorAll('img.cover[data-src]').forEach(function (im) {
+      if (im.dataset.srcset) { im.srcset = im.dataset.srcset; delete im.dataset.srcset; }
+      im.src = im.dataset.src; delete im.dataset.src;
+    });
+  };
+  ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (t) {
+    window.addEventListener(t, OD.wake, { capture: true, passive: true, once: true });
+  });
+  OD.on('open', OD.wake);
 
   function reflect() {
     var b = document.body, s = OD.state;
