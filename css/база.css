@@ -85,12 +85,13 @@ body{
   -webkit-font-smoothing:antialiased;
   -webkit-text-size-adjust:100%;text-size-adjust:100%;
   background-color:var(--paper);
-  /* запечённая бумага с зерном, без наложения; виньетка — как на холсте */
+  /* виньетка (как на холсте) поверх запечённой бумаги с зерном; плитка непрозрачная — нижним слоем, без наложения */
   background-image:
-    url("../assets/kartoteka/бумага-страница.webp"),
     radial-gradient(120% 80% at 12% 6%,rgba(120,95,55,.08),transparent 62%),
-    radial-gradient(100% 70% at 88% 94%,rgba(120,95,55,.09),transparent 60%);
-  background-size:420px,100% 100%,100% 100%;
+    radial-gradient(100% 70% at 88% 94%,rgba(120,95,55,.09),transparent 60%),
+    url("../assets/kartoteka/бумага-страница.webp");
+  background-size:100% 100%,100% 100%,420px;
+  background-repeat:no-repeat,no-repeat,repeat;
   touch-action:none;
   overscroll-behavior:none;
 }
