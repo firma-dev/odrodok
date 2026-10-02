@@ -1,24 +1,165 @@
 /* ============================================================
-   css/переворот.css — ЗАГОТОВКА. Хозяин: исполнитель «переворот».
+   css/переворот.css — «Смотреть» (обложка, плеер) и «Кадры»
+   (карточка, лента). Хозяин: исполнитель «переворот».
    Пара: js/переворот.js.
 
-   Что здесь будет:
-     · «Смотреть»: переворот обложки .cover-flip — var(--t-cover),
-       keyframes 0→90° кривая var(--e-flip1) с подъёмом translateZ(70px),
-       90→180° var(--e-flip2); стороны .cface прячутся через visibility
-       ровно на середине (.45s) — backface-visibility во вложенном 3D
-       не держит; свет .light темнеет к середине хода;
-     · плеер на обороте .cover-back [data-role="player"]: тёмный фон,
-       обложка .4, шкала цвета var(--sign), «00:00 … [хрон.]»;
-       кнопка: .c.is-playing → .i-stop/.t-stop видны, .i-play/.t-play нет;
-     · «Кадры»: переворот всей карточки .flip — var(--t-flip),
-       подъём translateZ(40px), visibility на .5s;
-       .c.is-frames → оборот .face.back visible;
-     · лента кадров .strip: translateY(−k·560px) var(--t-strip) var(--e-strip);
-       рамка .thumbs-frame: top = k·84 − 4 px, та же кривая;
-       подпись активной миниатюры opacity 1.
+   ЛЁГКИЙ ПЕРЕВОРОТ (решение для Safari, отличие от холста).
+   На холсте переворот обложки вложен в переворот карточки:
+   preserve-3d на двух уровнях, backface-visibility, подъём
+   translateZ(70/40px). Здесь — один уровень 3D:
+     · перспектива — функция perspective() в transform самой
+       поворачиваемой коробки (2200 обложка, 2400 карточка, на телефоне
+       720 и 1600); свойство perspective у родителей снято — headless
+       WebKit его на снимках не применяет, а perspective() рисует;
+     · .flip и .cover-flip — transform-style:flat; стороны лежат
+       плоско, без rotateY(180deg) и без backface-visibility
+       (в WebKit backface-visibility:hidden — отдельный слой на каждую
+       сторону каждой карточки, даже в покое);
+     · ход 0→90° (лицо), на середине стороны меняются через
+       visibility, затем −90→0° (оборот). Как на холсте: до 90°
+       кривая --e-flip1, после — --e-flip2;
+     · подъём translateZ заменён scale на середине хода
+       (1.033 ≈ 2200/(2200−70), 1.017 ≈ 2400/(2400−40)) — то же
+       увеличение, без вложенного 3D;
+     · в покое ни одного 3D-преобразования; постоянный слой
+       (will-change) — только у .flip и .cover-flip передней карточки.
+       Без filter.
 
-   Трогает: .flip, .cover-flip, .cface, .face, .light, .strip, .thumbs-frame,
-     .thumb, .counter, .c.is-playing, .c.is-frames, .c.is-flip-*.
-   Не трогает: .c/.stack/.tab (стопка), раскладку 390 (телефон).
+   Классы (ставит js/переворот.js на .c):
+     .is-playing    — обложка перевёрнута, на обороте плеер;
+     .is-frames     — карточка перевёрнута, на обороте кадры;
+     .is-cover-anim — идёт переворот обложки (--t-cover);
+     .is-card-anim  — идёт переворот карточки (--t-flip);
+     --shot         — номер кадра с нуля (лента и рамка).
+   Телефону: высота кадра --shot-h (560px) и шаг миниатюр
+   --thumb-step (84px) — переопределить в телефон.css; плеер —
+   классы .player-* ниже.
    ============================================================ */
+
+/* ── один уровень 3D: снимаем вложенный preserve-3d и перспективу
+   родителей из база.css; перспектива — perspective() в самом ходе ── */
+.c-persp,.cover-box{perspective:none}
+.flip,.cover-flip{transform-style:flat}
+.face,.cface{-webkit-backface-visibility:visible;backface-visibility:visible}
+.face.back,.cover-back{transform:none}
+
+/* ── какая сторона видна ──────────────────────────────────────
+   Видимая — visibility:inherit, а не visible: плеер лежит на лице
+   карточки и, когда карточка перевёрнута к кадрам, должен спрятаться
+   вместе с лицом (иначе просвечивает). */
+.c.is-playing .cover-front{visibility:hidden}
+.c.is-playing .cover-back{visibility:inherit}
+.c.is-frames .face.front{visibility:hidden}
+.c.is-frames .face.back{visibility:inherit}
+
+/* смена сторон ровно на середине хода (половина --t-cover / --t-flip) */
+.c.is-cover-anim .cface{transition:visibility 0s linear .45s}
+.c.is-card-anim .face{transition:visibility 0s linear .5s}
+
+/* ── ход ──────────────────────────────────────────────────── */
+/* постоянный слой у переворачиваемых сторон передней карточки: по пробе
+   (vrx/kartoteka-proba) will-change только на время хода в WebKit хуже */
+.c[data-depth="0"] .cover-flip,
+.c[data-depth="0"] .flip{will-change:transform}
+.c.is-cover-anim.is-playing .cover-flip{animation:od-cover-on var(--t-cover) both}
+.c.is-cover-anim:not(.is-playing) .cover-flip{animation:od-cover-off var(--t-cover) both}
+.c.is-card-anim.is-frames .flip{animation:od-card-on var(--t-flip) both}
+.c.is-card-anim:not(.is-frames) .flip{animation:od-card-off var(--t-flip) both}
+
+/* кривые — --e-flip1 / --e-flip2 из база.css, здесь числами:
+   var() внутри @keyframes понимают не все Safari */
+@keyframes od-cover-on{
+  0%{transform:perspective(2200px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+  50%{transform:perspective(2200px) rotateY(90deg) scale(1.033)}
+  50.01%{transform:perspective(2200px) rotateY(-90deg) scale(1.033);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+  100%{transform:perspective(2200px) rotateY(0)}
+}
+@keyframes od-cover-off{
+  0%{transform:perspective(2200px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+  50%{transform:perspective(2200px) rotateY(-90deg) scale(1.033)}
+  50.01%{transform:perspective(2200px) rotateY(90deg) scale(1.033);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+  100%{transform:perspective(2200px) rotateY(0)}
+}
+@keyframes od-card-on{
+  0%{transform:perspective(2400px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+  50%{transform:perspective(2400px) rotateY(90deg) scale(1.017)}
+  50.01%{transform:perspective(2400px) rotateY(-90deg) scale(1.017);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+  100%{transform:perspective(2400px) rotateY(0)}
+}
+@keyframes od-card-off{
+  0%{transform:perspective(2400px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+  50%{transform:perspective(2400px) rotateY(-90deg) scale(1.017)}
+  50.01%{transform:perspective(2400px) rotateY(90deg) scale(1.017);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+  100%{transform:perspective(2400px) rotateY(0)}
+}
+/* телефон: перспектива под меньший размер (карточка — как .c-persp
+   на 390 в база.css, обложка — 2200 × 326/996) */
+@media (max-width:767px){
+  @keyframes od-cover-on-m{
+    0%{transform:perspective(720px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+    50%{transform:perspective(720px) rotateY(90deg) scale(1.033)}
+    50.01%{transform:perspective(720px) rotateY(-90deg) scale(1.033);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+    100%{transform:perspective(720px) rotateY(0)}
+  }
+  @keyframes od-cover-off-m{
+    0%{transform:perspective(720px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+    50%{transform:perspective(720px) rotateY(-90deg) scale(1.033)}
+    50.01%{transform:perspective(720px) rotateY(90deg) scale(1.033);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+    100%{transform:perspective(720px) rotateY(0)}
+  }
+  @keyframes od-card-on-m{
+    0%{transform:perspective(1600px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+    50%{transform:perspective(1600px) rotateY(90deg) scale(1.017)}
+    50.01%{transform:perspective(1600px) rotateY(-90deg) scale(1.017);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+    100%{transform:perspective(1600px) rotateY(0)}
+  }
+  @keyframes od-card-off-m{
+    0%{transform:perspective(1600px) rotateY(0);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+    50%{transform:perspective(1600px) rotateY(-90deg) scale(1.017)}
+    50.01%{transform:perspective(1600px) rotateY(90deg) scale(1.017);animation-timing-function:cubic-bezier(.15,.5,.45,1)}
+    100%{transform:perspective(1600px) rotateY(0)}
+  }
+  .c.is-cover-anim.is-playing .cover-flip{animation-name:od-cover-on-m}
+  .c.is-cover-anim:not(.is-playing) .cover-flip{animation-name:od-cover-off-m}
+  .c.is-card-anim.is-frames .flip{animation-name:od-card-on-m}
+  .c.is-card-anim:not(.is-frames) .flip{animation-name:od-card-off-m}
+}
+
+/* свет: сторона темнеет, когда встаёт к зрителю ребром */
+.c.is-cover-anim .cface .light{animation:od-light var(--t-cover) ease-in-out}
+.c.is-card-anim .face>.light{animation:od-light var(--t-flip) ease-in-out}
+@keyframes od-light{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+
+/* ── кнопка «Смотреть» / «■ Стоп» ─────────────────────────── */
+.c.is-playing [data-action="watch"] .i-play,
+.c.is-playing [data-action="watch"] .t-play{display:none}
+.c.is-playing [data-action="watch"] .i-stop,
+.c.is-playing [data-action="watch"] .t-stop{display:inline}
+
+/* ── плеер на обороте обложки (собирает js/переворот.js) ──── */
+.player-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.4}
+.player-note{position:absolute;left:24px;top:20px;font-size:11px;color:rgba(242,236,224,.7)}
+.player-bar{position:absolute;left:24px;right:24px;bottom:22px;display:flex;align-items:center;gap:16px;
+  font-size:11px;color:#F2ECE0}
+.player-track{position:relative;flex:1 1 auto;height:3px;overflow:hidden;background:rgba(242,236,224,.3)}
+.player-fill{position:absolute;inset:0;background:var(--sign);transform:scaleX(0);transform-origin:0 50%}
+.c.is-playing .player-fill{animation:od-bar 90s linear forwards}
+@keyframes od-bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.player-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0E0D0B}
+
+/* ── кадры: лента и рамка — один ход ──────────────────────── */
+.strip{transform:translateY(calc(var(--shot,0) * var(--shot-h,560px) * -1));
+  transition:transform var(--t-strip) var(--e-strip)}
+.thumbs-frame{transform:translateY(calc(var(--shot,0) * var(--thumb-step,84px)));
+  transition:transform var(--t-strip) var(--e-strip)}
+.thumb .thumb-label{transition:opacity .3s}
+.thumb.is-on .thumb-label{opacity:1}
+.thumb img{transition:transform .15s linear}
+.thumb:hover img{transform:translateX(-2px)}
+
+/* ── меньше движения: всё сразу ───────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .c .cover-flip,.c .flip,.c .light,.c .player-fill{animation:none!important}
+  .c .cface,.c .face{transition:none!important}
+  .strip,.thumbs-frame{transition:none!important}
+}
