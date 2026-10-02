@@ -8,9 +8,9 @@
    Исключения (простые проявления первого экрана и панели) помечены.
 
    Лёгкий вариант для Safari (решение брифа):
-     · бумага и зерно — одна запечённая текстура бумага-зерно.webp (серая,
-       непрозрачная), умножается на цвет фона через background-blend-mode
-       внутри одного элемента; без mix-blend-mode и отдельного слоя зерна;
+     · бумага и зерно — одна запечённая текстура бумага-зерно.webp обычным
+       background-image (тайл 512 = 420 px); никаких режимов наложения
+       (ни mix-blend-mode, ни background-blend-mode) и слоя зерна поверх;
      · без -webkit-text-stroke: утолщение OCR-A запечено в ocra-bold.woff2;
      · без text-shadow; краска машинки (background-clip:text) только
        на имени «Виктор Сивак».
@@ -85,13 +85,12 @@ body{
   -webkit-font-smoothing:antialiased;
   -webkit-text-size-adjust:100%;text-size-adjust:100%;
   background-color:var(--paper);
-  /* бумага с запечённым зерном умножается на цвет; виньетка — как на холсте */
+  /* запечённая бумага с зерном, без наложения; виньетка — как на холсте */
   background-image:
     url("../assets/kartoteka/бумага-зерно.webp"),
     radial-gradient(120% 80% at 12% 6%,rgba(120,95,55,.08),transparent 62%),
     radial-gradient(100% 70% at 88% 94%,rgba(120,95,55,.09),transparent 60%);
   background-size:420px,100% 100%,100% 100%;
-  background-blend-mode:multiply,normal,normal;
   touch-action:none;
   overscroll-behavior:none;
 }
@@ -256,13 +255,13 @@ body[data-open="0"] .c:not([data-depth="0"]) .tab{top:4px}
 /* бумага карточки: красная черта на 56 px, белая полоса над ней, линовка 28 px */
 .card{
   background-color:var(--card);
+  /* текстура непрозрачная — нижним слоем, черта и линовка поверх неё */
   background-image:
-    url("../assets/kartoteka/бумага-зерно.webp"),
     linear-gradient(to bottom,transparent 55px,var(--redline) 55px,var(--redline) 57px,transparent 57px),
     linear-gradient(to bottom,var(--card) 0,var(--card) 56px,transparent 56px),
-    repeating-linear-gradient(to bottom,transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px);
-  background-size:420px,auto,auto,auto;
-  background-blend-mode:multiply,normal,normal,normal;
+    repeating-linear-gradient(to bottom,transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px),
+    url("../assets/kartoteka/бумага-зерно.webp");
+  background-size:auto,auto,auto,420px;
   border-bottom:3px solid var(--edge);
   box-shadow:0 0 0 1px rgba(23,21,18,.16),0 1px 1px rgba(40,28,10,.18),0 4px 6px rgba(40,28,10,.10),0 14px 28px rgba(40,28,10,.14);
 }
