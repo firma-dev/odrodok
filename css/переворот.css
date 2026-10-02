@@ -1,0 +1,24 @@
+/* ============================================================
+   css/переворот.css — ЗАГОТОВКА. Хозяин: исполнитель «переворот».
+   Пара: js/переворот.js.
+
+   Что здесь будет:
+     · «Смотреть»: переворот обложки .cover-flip — var(--t-cover),
+       keyframes 0→90° кривая var(--e-flip1) с подъёмом translateZ(70px),
+       90→180° var(--e-flip2); стороны .cface прячутся через visibility
+       ровно на середине (.45s) — backface-visibility во вложенном 3D
+       не держит; свет .light темнеет к середине хода;
+     · плеер на обороте .cover-back [data-role="player"]: тёмный фон,
+       обложка .4, шкала цвета var(--sign), «00:00 … [хрон.]»;
+       кнопка: .c.is-playing → .i-stop/.t-stop видны, .i-play/.t-play нет;
+     · «Кадры»: переворот всей карточки .flip — var(--t-flip),
+       подъём translateZ(40px), visibility на .5s;
+       .c.is-frames → оборот .face.back visible;
+     · лента кадров .strip: translateY(−k·560px) var(--t-strip) var(--e-strip);
+       рамка .thumbs-frame: top = k·84 − 4 px, та же кривая;
+       подпись активной миниатюры opacity 1.
+
+   Трогает: .flip, .cover-flip, .cface, .face, .light, .strip, .thumbs-frame,
+     .thumb, .counter, .c.is-playing, .c.is-frames, .c.is-flip-*.
+   Не трогает: .c/.stack/.tab (стопка), раскладку 390 (телефон).
+   ============================================================ */

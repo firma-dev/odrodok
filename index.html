@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Одродок</title>
 <meta name="description" content="Одродок — документальное кино.">
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#f2ece0">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Одродок">
@@ -17,52 +17,147 @@
 <meta property="og:url" content="https://odrodok.ru/">
 <meta property="og:image" content="https://odrodok.ru/assets/icons/icon-512.png">
 
-<style>
-@font-face{ font-family:"OCRABecker"; font-weight:400; font-style:normal; font-display:swap;
-  src:url('assets/fonts/ocra-becker.otf') format('opentype'); }
+<!--
+  Картотека. Разметка общая для всех частей; кто что трогает —
+  docs/дизайн/передача-картотека.md, раздел «Раскладка файлов».
+  Состояние страницы — атрибуты на <body>, их ставит OD.set() из js/данные.js:
+    data-open="0|1"  data-sort="new|old"  data-sound="on|off"  data-phone="0|1"
+-->
+<link rel="stylesheet" href="css/база.css">
+<link rel="stylesheet" href="css/стопка.css">
+<link rel="stylesheet" href="css/переворот.css">
+<link rel="stylesheet" href="css/телефон.css">
 
-:root{
-  --c-paper: rgb(242, 236, 224);
-  --c-ink:   rgb(23, 21, 18);
-  --paper:var(--c-paper); --ink:var(--c-ink);
-}
-
-*{ box-sizing:border-box; }
-
-html,body{ margin:0; padding:0; height:100%; }
-
-body{
-  display:flex; align-items:center; justify-content:center;
-  color:var(--ink);
-  font-family:"OCRABecker", monospace;
-
-  background-color:var(--paper);
-  background-image:
-    radial-gradient(120% 80% at 12% 6%,  rgba(120, 95, 55, .055), transparent 62%),
-    radial-gradient(100% 70% at 88% 94%, rgba(120, 95, 55, .05),  transparent 60%),
-    radial-gradient(70% 50% at 60% 40%,  rgba(255,255,255,.5),    transparent 70%);
-  background-attachment:fixed;
-}
-
-/* зерно бумаги — два слоя */
-body::before,
-body::after{
-  content:""; position:fixed; inset:0; pointer-events:none; mix-blend-mode:multiply;
-}
-body::before{
-  z-index:2; opacity:.075;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.22' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
-}
-body::after{
-  z-index:3; opacity:.11;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-.mark{ position:relative; z-index:1; }
-.mark img{ display:block; width:clamp(64px, 12vw, 128px); height:auto; }
-</style>
+<script src="js/данные.js" defer></script>
+<script src="js/стопка.js" defer></script>
+<script src="js/переворот.js" defer></script>
+<script src="js/звук.js" defer></script>
+<script src="js/телефон.js" defer></script>
 </head>
-<body>
-  <div class="mark"><img src="assets/mark.webp" alt="Одродок"></div>
+<body data-open="0" data-sort="new" data-sound="on" data-phone="0">
+
+<!-- поля экрана: прижаты к краям окна, не к сцене -->
+<div class="rail rail-l" aria-hidden="true">виктор сивак · одродок</div>
+<div class="rail rail-r" aria-hidden="true" data-role="clock">(00.00.00) 00:00:00</div>
+
+<!-- сцена: геометрия холста 1440×900 (телефон 390×844), масштаб под окно — переменная --k -->
+<div class="stage" id="stage">
+
+  <!-- верхняя панель: появляется, когда стопка доехала -->
+  <div class="panel" id="panel">
+    <button type="button" class="btn-orange" data-action="close">✕ Закрыть</button>
+    <div class="sw" role="group" aria-label="Порядок карточек">
+      <span class="sw-knob"></span>
+      <button type="button" class="sw-opt" data-action="sort" data-sort="new" aria-pressed="true"><span class="only-desk">сначала новые</span><span class="only-phone">новые</span></button>
+      <button type="button" class="sw-opt" data-action="sort" data-sort="old" aria-pressed="false"><span class="only-desk">сначала старые</span><span class="only-phone">старые</span></button>
+    </div>
+    <button type="button" class="btn-icon" data-action="sound" aria-label="Выключить звук" aria-pressed="true">
+      <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true">
+        <path d="M1 4h2.5L7 1v10L3.5 8H1z" fill="currentColor"/>
+        <path class="snd-on" d="M9 3.5c1 .7 1 4.3 0 5M11 2c2 1.4 2 6.6 0 8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        <path class="snd-off" d="M9 4l4 4M13 4l-4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- первый экран -->
+  <section class="intro" id="intro" aria-label="Виктор Сивак">
+    <figure class="photo">
+      <img src="assets/kartoteka/фото.webp" data-fallback="none" alt="Виктор Сивак" width="392" height="392">
+      <span class="photo-shade"></span>
+      <figcaption>[место, год]</figcaption>
+      <span class="photo-tape"></span>
+    </figure>
+    <img class="sign" src="assets/kartoteka/знак.webp" data-fallback="assets/mark.webp" alt="Одродок" width="44" height="44">
+    <div class="intro-text">
+      <div class="eyebrow">одродок · личная картотека</div>
+      <h1 class="name">Виктор<br class="only-desk"> Сивак</h1>
+      <p>Привет. Я снимаю документальное кино: о людях, с которыми мне спокойно, и о местах, куда хочется вернуться.</p>
+      <p>Здесь моя картотека. Каждый фильм — отдельная карточка: обложка, кадры, пара строк о том, как он появился, и сам фильм на обороте.</p>
+      <p><span class="only-desk">Потяните стопку сверху — карточки выпадут, их можно листать.</span><span class="only-phone">Смахните вниз — карточки выпадут, их можно листать.</span></p>
+    </div>
+  </section>
+
+  <!-- стопка: карточки вставляет OD.render() из шаблона ниже, двигает js/стопка.js -->
+  <div class="stack" id="stack" aria-label="Картотека">
+    <div class="stack-seat" id="stack-seat"></div>
+  </div>
+
+  <button type="button" class="pull" id="pull" data-action="open" aria-label="Вытянуть картотеку">↓ потяните</button>
+</div>
+
+<!--
+  Шаблон одной карточки. Заполняет OD.card() в js/данные.js.
+  data-role — куда кладутся данные, data-action — что делает кнопка.
+  Классы и роли менять только через передачу: на них стоят все части.
+-->
+<template id="tpl-card">
+  <article class="c" data-slug="" data-i="" data-depth="">
+    <button type="button" class="tab" data-action="pick" data-role="tab"></button>
+    <div class="c-persp">
+      <div class="flip" data-role="flip">
+
+        <section class="face card front" data-role="front">
+          <span class="ln hdr-l" data-role="hdr-l"></span>
+          <span class="ln hdr-r" data-role="hdr-r"></span>
+          <div class="cover-box">
+            <div class="cover-flip" data-role="cover-flip">
+              <div class="cface cover-front">
+                <img class="cover" data-role="cover" alt="">
+                <span class="ph cover-ph" data-role="cover-ph" hidden></span>
+                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+                <span class="light"></span>
+              </div>
+              <div class="cface cover-back" data-role="player"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn-white" data-action="watch">
+              <svg class="i-play" width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><path d="M1 1l10 6-10 6z" fill="currentColor"/></svg>
+              <svg class="i-stop" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="1" width="10" height="10" fill="currentColor"/></svg>
+              <span class="t-play">Смотреть</span><span class="t-stop">Стоп</span>
+            </button>
+            <button type="button" class="btn-white" data-action="frames">
+              <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><rect x="1" y="1" width="12" height="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 1v10M10 1v10" stroke="currentColor" stroke-width="1.2"/></svg>
+              Кадры
+            </button>
+          </div>
+          <dl class="fields" data-role="fields"></dl>
+          <p class="par desc" data-role="desc"></p>
+          <span class="sheet" data-role="sheet"></span>
+          <div class="wear" data-role="wear"></div>
+          <span class="mark" data-role="mark"></span>
+          <span class="hole"></span>
+          <span class="light"></span>
+        </section>
+
+        <section class="face card back" data-role="back">
+          <span class="ln hdr-l" data-role="back-hdr-l"></span>
+          <span class="ln hdr-r" data-role="back-hdr-r"></span>
+          <div class="shots-window">
+            <div class="strip" data-role="strip"></div>
+          </div>
+          <div class="shots-nav">
+            <button type="button" class="btn-white sq" data-action="shot-prev" aria-label="Предыдущий кадр"><span class="only-desk">↑</span><span class="only-phone">←</span></button>
+            <span class="counter" data-role="counter"></span>
+            <button type="button" class="btn-white sq" data-action="shot-next" aria-label="Следующий кадр"><span class="only-desk">↓</span><span class="only-phone">→</span></button>
+          </div>
+          <div class="thumbs" data-role="thumbs">
+            <span class="thumbs-frame"></span>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn-white" data-action="to-front">↺ К обложке</button>
+          </div>
+          <span class="sheet" data-role="back-sheet"></span>
+          <div class="wear" data-role="back-wear"></div>
+          <span class="hole"></span>
+          <span class="light"></span>
+        </section>
+
+      </div>
+    </div>
+    <div class="shade"></div>
+  </article>
+</template>
 </body>
 </html>

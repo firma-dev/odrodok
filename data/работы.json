@@ -1,0 +1,244 @@
+{
+  "_": "Собрано tools/опись-в-json.py из описи. Руками не править — пересобрать.",
+  "source": "https://claude.ai/artifact/NwWqncordqwaG8ytDkwLAH",
+  "built": "2026-10-02T14:15:41Z",
+  "works": [
+    {
+      "id": "w01",
+      "slug": "kukushka",
+      "order": 1,
+      "no": "№1",
+      "title": "Кукушка в ясном поле",
+      "type": "Док",
+      "duration": "8:08",
+      "status": "опубликован",
+      "added": "20.06.26",
+      "place": "Ясно поле",
+      "dates": "21.08.25 – 24.08.25",
+      "people": "Варя Чиркина",
+      "authors": "Виктор Сивак × Саша Лопатко",
+      "cycle": null,
+      "link": "https://kinescope.io/hU2UQuz3kLhcMUtWyPWC16",
+      "desc": "разные взгляды на то, зачем нужна музыка, игра на овощах, сожжение страха импровизировать, ансамбль в пруду и боги, которые придумывают планеты",
+      "note": "дебют",
+      "short": "кукушка",
+      "labels": {
+        "people": "героиня",
+        "authors": "авторы"
+      },
+      "cover": "assets/kartoteka/обложки/kukushka.webp",
+      "shots": [
+        "assets/kartoteka/кадры/kukushka/1.webp",
+        "assets/kartoteka/кадры/kukushka/2.webp",
+        "assets/kartoteka/кадры/kukushka/3.webp",
+        "assets/kartoteka/кадры/kukushka/4.webp",
+        "assets/kartoteka/кадры/kukushka/5.webp",
+        "assets/kartoteka/кадры/kukushka/6.webp"
+      ],
+      "src": {
+        "cover": "f26d9a8fee60d05919f354aa7de4beb8",
+        "shots": [
+          "bbe179db3c6d18bc3ff537631f118170",
+          "a54eb5ba20ce528fe1c82cfdaaa818ba",
+          "d54fea6384d3b26d067b06248d49a10b",
+          "2288be5265e223bec7cf1b649dc5c0e4",
+          "1b9d22408156cc7e689e9d5fb546c6d4",
+          "9d07e87ce486f6de24e434872db64a56"
+        ]
+      }
+    },
+    {
+      "id": "w02",
+      "slug": "dva-brata",
+      "order": 2,
+      "no": "№2",
+      "title": "Два брата",
+      "type": "Док",
+      "duration": "06:06",
+      "status": "опубликован",
+      "added": "19.07.2026",
+      "place": "Мск — Спб — Карелия",
+      "dates": "21.04.26 – 24.04.26",
+      "people": "Виктор Сивак, Георгий Сивак",
+      "authors": null,
+      "cycle": null,
+      "link": "https://kinescope.io/c9spYBfqx4JJfDn8YJ6nJs",
+      "desc": "в апреле я встретил брата. он был с подбитым глазом. \n\nя сказал — поехали в карелию, снимем фильм? \n\nпроехали две тысячи километров. видели долину водопадов и мраморный карьер. солнце светило. шёл снег.\n\nв апреле я встретил брата.",
+      "note": "мне 24",
+      "short": "два брата",
+      "labels": {
+        "place": "маршрут"
+      },
+      "cover": "assets/kartoteka/обложки/dva-brata.webp",
+      "shots": [
+        "assets/kartoteka/кадры/dva-brata/1.webp",
+        "assets/kartoteka/кадры/dva-brata/2.webp",
+        "assets/kartoteka/кадры/dva-brata/3.webp",
+        "assets/kartoteka/кадры/dva-brata/4.webp",
+        "assets/kartoteka/кадры/dva-brata/5.webp",
+        "assets/kartoteka/кадры/dva-brata/6.webp"
+      ],
+      "src": {
+        "cover": "7970a328fd88acb74e680d74a5c90985",
+        "shots": [
+          "ac66252903a7fc681dbf5633e648eebe",
+          "bcb955d279384f434f0aeb2edfff3a98",
+          "2f4a2532b45d54778e636034fed8adee",
+          "103cf3f63baee25382c3befa6bf6bb86",
+          "ae74d20c4975f7a05d2f104dd447bdce",
+          "9c7d2afedf186234fb03fa3d67376555"
+        ]
+      }
+    },
+    {
+      "id": "w03",
+      "slug": "bloki",
+      "order": 3,
+      "no": "№3",
+      "title": "Блоки. Белградские этюды",
+      "type": null,
+      "duration": null,
+      "status": null,
+      "added": null,
+      "place": "Белград",
+      "dates": "03.06.26",
+      "people": "Алина Маркина",
+      "authors": null,
+      "cycle": "место, в котором мне спокойно",
+      "link": null,
+      "desc": null,
+      "note": null,
+      "short": "блоки",
+      "labels": {
+        "people": "героиня",
+        "dates": "дата"
+      },
+      "cover": "assets/kartoteka/обложки/bloki.webp",
+      "shots": [],
+      "src": {
+        "cover": null,
+        "shots": []
+      }
+    },
+    {
+      "id": "w04",
+      "slug": "druzhba",
+      "order": 4,
+      "no": "№3",
+      "title": "Что такое дружба?",
+      "type": "монологи",
+      "duration": null,
+      "status": null,
+      "added": null,
+      "place": "Тюменский хутор",
+      "dates": "21–24.04.26",
+      "people": null,
+      "authors": null,
+      "cycle": "творческая интеллигенция",
+      "link": null,
+      "desc": null,
+      "note": null,
+      "short": "дружба",
+      "labels": {},
+      "cover": "assets/kartoteka/обложки/druzhba.webp",
+      "shots": [],
+      "src": {
+        "cover": null,
+        "shots": []
+      }
+    },
+    {
+      "id": "w06",
+      "slug": "molodost",
+      "order": 6,
+      "no": "№4",
+      "title": "Что для тебя молодость?",
+      "type": "монологи",
+      "duration": null,
+      "status": null,
+      "added": null,
+      "place": "Самотёк",
+      "dates": "21–24.04.26",
+      "people": null,
+      "authors": null,
+      "cycle": "творческая интеллигенция",
+      "link": null,
+      "desc": null,
+      "note": null,
+      "short": "молодость",
+      "labels": {},
+      "cover": "assets/kartoteka/обложки/molodost.webp",
+      "shots": [],
+      "src": {
+        "cover": null,
+        "shots": []
+      }
+    },
+    {
+      "id": "w07",
+      "slug": "pervoprohodec",
+      "order": 7,
+      "no": "№6",
+      "title": "Первопроходец",
+      "type": "этюд",
+      "duration": null,
+      "status": "снимается",
+      "added": null,
+      "place": "Угличи",
+      "dates": "10–12.07.26",
+      "people": "Гриша Порядков",
+      "authors": null,
+      "cycle": null,
+      "link": null,
+      "desc": "Я живу в мегаполисе и хочу уехать. Еду под Углич, где с нуля строят деревню, к тем, кто уже решился.",
+      "note": null,
+      "short": "первопроходец",
+      "labels": {
+        "people": "герой"
+      },
+      "cover": "assets/kartoteka/обложки/pervoprohodec.webp",
+      "shots": [
+        "assets/kartoteka/кадры/pervoprohodec/1.webp",
+        "assets/kartoteka/кадры/pervoprohodec/2.webp",
+        "assets/kartoteka/кадры/pervoprohodec/3.webp",
+        "assets/kartoteka/кадры/pervoprohodec/4.webp",
+        "assets/kartoteka/кадры/pervoprohodec/5.webp",
+        "assets/kartoteka/кадры/pervoprohodec/6.webp"
+      ],
+      "src": {
+        "cover": null,
+        "shots": []
+      }
+    },
+    {
+      "id": "w08",
+      "slug": "mariya",
+      "order": 8,
+      "no": "№9",
+      "title": "Мария",
+      "type": null,
+      "duration": null,
+      "status": null,
+      "added": null,
+      "place": null,
+      "dates": "28.09.2026",
+      "people": "Мария Соколовская",
+      "authors": "Александр Расторгуев",
+      "cycle": null,
+      "link": null,
+      "desc": null,
+      "note": null,
+      "short": "мария",
+      "labels": {
+        "people": "героиня",
+        "dates": "дата"
+      },
+      "cover": "assets/kartoteka/обложки/mariya.webp",
+      "shots": [],
+      "src": {
+        "cover": null,
+        "shots": []
+      }
+    }
+  ]
+}
