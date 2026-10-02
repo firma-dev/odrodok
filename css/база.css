@@ -8,8 +8,9 @@
    Исключения (простые проявления первого экрана и панели) помечены.
 
    Лёгкий вариант для Safari (решение брифа):
-     · бумага и зерно — обычные слои background-image, без mix-blend
-       и background-blend-mode; текстуры запечены заранее (с прозрачностью);
+     · бумага и зерно — одна запечённая текстура бумага-зерно.webp обычным
+       background-image (тайл 512 = 420 px); никаких режимов наложения
+       (ни mix-blend-mode, ни background-blend-mode) и слоя зерна поверх;
      · без -webkit-text-stroke: утолщение OCR-A запечено в ocra-bold.woff2;
      · без text-shadow; краска машинки (background-clip:text) только
        на имени «Виктор Сивак».
@@ -19,10 +20,10 @@
    ============================================================ */
 
 /* ── шрифты ─────────────────────────────────────────────────
-   Файлы кладёт исполнитель «файлы» в assets/kartoteka/.
-   Пока их нет — запасной OCR-A из assets/fonts/. */
+   Обычный OCR-A уже был в репо (assets/fonts/), остальное — assets/kartoteka/
+   (опись файлов: assets/kartoteka/ОПИСЬ.md). */
 @font-face{font-family:"OCRA";font-weight:400;font-style:normal;font-display:swap;
-  src:url("../assets/kartoteka/ocra.woff2") format("woff2"),url("../assets/fonts/ocra-becker.woff2") format("woff2")}
+  src:url("../assets/fonts/ocra-becker.woff2") format("woff2")}
 @font-face{font-family:"OCRA";font-weight:700;font-style:normal;font-display:swap;
   src:url("../assets/kartoteka/ocra-bold.woff2") format("woff2"),url("../assets/fonts/ocra-becker.woff2") format("woff2")}
 @font-face{font-family:"Amatic SC";font-weight:700;font-style:normal;font-display:swap;
@@ -84,14 +85,13 @@ body{
   -webkit-font-smoothing:antialiased;
   -webkit-text-size-adjust:100%;text-size-adjust:100%;
   background-color:var(--paper);
-  /* зерно и бумага — запечённые текстуры с прозрачностью, обычными слоями;
-     виньетка — как на холсте */
+  /* виньетка (как на холсте) поверх запечённой бумаги с зерном; плитка непрозрачная — нижним слоем, без наложения */
   background-image:
-    url("../assets/kartoteka/зерно.webp"),
-    url("../assets/kartoteka/бумага.webp"),
     radial-gradient(120% 80% at 12% 6%,rgba(120,95,55,.08),transparent 62%),
-    radial-gradient(100% 70% at 88% 94%,rgba(120,95,55,.09),transparent 60%);
-  background-size:420px,512px,100% 100%,100% 100%;
+    radial-gradient(100% 70% at 88% 94%,rgba(120,95,55,.09),transparent 60%),
+    url("../assets/kartoteka/бумага-страница.webp");
+  background-size:100% 100%,100% 100%,420px;
+  background-repeat:no-repeat,no-repeat,repeat;
   touch-action:none;
   overscroll-behavior:none;
 }
@@ -256,12 +256,13 @@ body[data-open="0"] .c:not([data-depth="0"]) .tab{top:4px}
 /* бумага карточки: красная черта на 56 px, белая полоса над ней, линовка 28 px */
 .card{
   background-color:var(--card);
+  /* текстура непрозрачная — нижним слоем, черта и линовка поверх неё */
   background-image:
-    url("../assets/kartoteka/бумага.webp"),
     linear-gradient(to bottom,transparent 55px,var(--redline) 55px,var(--redline) 57px,transparent 57px),
     linear-gradient(to bottom,var(--card) 0,var(--card) 56px,transparent 56px),
-    repeating-linear-gradient(to bottom,transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px);
-  background-size:512px,auto,auto,auto;
+    repeating-linear-gradient(to bottom,transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px),
+    url("../assets/kartoteka/бумага-карточка.webp");
+  background-size:auto,auto,auto,420px;
   border-bottom:3px solid var(--edge);
   box-shadow:0 0 0 1px rgba(23,21,18,.16),0 1px 1px rgba(40,28,10,.18),0 4px 6px rgba(40,28,10,.10),0 14px 28px rgba(40,28,10,.14);
 }

@@ -1,26 +1,112 @@
 /* ============================================================
-   css/стопка.css — ЗАГОТОВКА. Хозяин: исполнитель «стопка».
-   Пара: js/стопка.js.
+   css/стопка.css — движение стопки. Хозяин: исполнитель «стопка».
+   Пара: js/стопка.js. Статичный вид — в база.css.
 
-   Что здесь будет: всё движение стопки (статичный вид — в база.css).
-     · выпадение стопки .stack: transform var(--t-stack) var(--e-stack);
-       «посадка» 3 px за var(--t-seat) после первого открытия (.stack-seat);
-       перетаскивание рукой — без перехода (класс .stack.is-drag);
-     · ярлыки задних при первом открытии: top var(--t-tabs) var(--e-tabs),
-       задержка 400 + (n−1)·220 мс (body.is-first — ставит стопка.js);
-     · уход передней вниз: var(--t-fall) var(--e-fall), rotateX(−14°);
-       возврат: var(--t-back) var(--e-back);
-     · сдвиг ряда ярлыков: left var(--t-row) var(--e-row) .12s;
-       новый ярлык справа — opacity var(--t-rowin) .35s;
-     · затемнение задних .shade: opacity .8s ease;
-     · панель #panel: появляется, когда стопка доехала
-       (opacity .6s, задержка 2.2s при первом открытии, 1.2s потом;
-       pointer-events:auto) — по классу body.is-arrived;
-     · смена порядка: стопка гаснет .25s, перекладывается, проявляется;
-     · больше 9 работ: видны 9 (передняя + 8), десятая и дальше opacity 0.
+   Классы (ставит стопка.js):
+     .stack.is-drag      стопку тянут рукой — без перехода, transform инлайном
+     .stack.is-fading    смена порядка: стопка погасла
+     .stack.is-instant   перекладка — без переходов на один кадр
+     .stack-seat.is-seat «посадка» 3 px после первого открытия
+     body.is-first       первое открытие: каскад ярлыков (2,5 с)
+     body.is-moving      стопка едет (открытие/закрытие)
+     body.is-arrived     стопка доехала — видна панель
+     body.is-instant     прямой заход по адресу — всё сразу на месте
+     .c[data-depth]      i − index (отрицательная — ушла вниз), --d = 0…9
+     .c.is-gone          ушла вниз (d < 0); в покое — visibility:hidden
+     .c.is-falling       уходит вниз   (--t-fall --e-fall)
+     .c.is-rising        возвращается  (--t-back --e-back)
+     .c.is-drag          тянут рукой — transform инлайном
+     .c.is-held          прыжок назад через ярлык: промежуточные стоят на
+                         месте без лица (видны только ярлыки), пока целевая
+                         поднимается
+     .c.is-near          окно ±2 от передней: постоянный слой (will-change)
+     .c.is-deep          дальше 2 за передней: без 3D-слоёв
+     .c.is-far           d ≥ 9: не видна (opacity 0)
+     .c.is-off           d ≤ −3 или d ≥ 10: display:none
 
-   Трогает классы/атрибуты: .stack, .stack-seat, .c, .c[data-depth], --d,
-     .tab, .shade, .panel, body.is-first, body.is-arrived, .stack.is-drag,
-     .c.is-falling, .c.is-gone (ушедшие вниз).
-   Не трогает: .face/.flip/.cover-flip (переворот), раскладку 390 (телефон).
+   Safari: двигаются только transform и opacity; ярлыки — свойством
+   translate (не left/top), чтобы не перерисовывать слой карточки;
+   постоянные слои только у окна ±2 (.is-near), у дальних (.is-deep)
+   внутренний 3D (.flip/.cover-flip) плоский, обороты убраны.
    ============================================================ */
+
+/* ── выпадение стопки ─────────────────────────────────────── */
+.stack{transition:transform var(--t-stack) var(--e-stack),opacity .25s linear}
+.stack.is-drag{transition:opacity .25s linear}
+.stack.is-fading{opacity:0}
+
+@keyframes od-seat{
+  0%{transform:translateY(0)}
+  35%{transform:translateY(3px)}
+  70%{transform:translateY(-.5px)}
+  100%{transform:translateY(0)}
+}
+.stack-seat.is-seat{animation:od-seat var(--t-seat) var(--e-seat)}
+
+/* тянуть рукой: без выделения текста и «призрака» картинки */
+.c,.pull{-webkit-user-select:none;user-select:none}
+.c img{-webkit-user-drag:none}
+body[data-open="0"] .c,body[data-open="1"] .c[data-depth="0"]{cursor:grab}
+.stack.is-drag .c,.c.is-drag{cursor:grabbing}
+
+/* ── карточки ─────────────────────────────────────────────── */
+/* проявление новой справа — с задержкой .35s, уход — сразу */
+.c{transition:opacity var(--t-rowin) ease .35s}
+.c.is-near{will-change:transform}
+.c.is-far{opacity:0;pointer-events:none;transition-delay:0s}
+.c.is-off{display:none}
+
+.c.is-gone{transform:translate3d(0,1700px,0) rotateX(-14deg);pointer-events:none}
+.c.is-gone:not(.is-falling):not(.is-rising):not(.is-drag){visibility:hidden}
+
+/* вниз — с ускорением, как под весом; обратно — с торможением */
+.c.is-falling{transition:transform var(--t-fall) var(--e-fall),opacity var(--t-rowin) ease .35s}
+.c.is-rising{transition:transform var(--t-back) var(--e-back),opacity var(--t-rowin) ease .35s}
+.c.is-drag{transition:none}
+
+.c.is-held .c-persp,.c.is-held .shade{visibility:hidden}
+
+/* дальние (за окном ±2) — без 3D-слоёв: внутренний 3D плоский, обороты
+   убраны. Ближние и карточка в движении не переключаются — замер WebKit:
+   переключение на каждом листании дороже (p95 20–25 мс против 18) */
+.c.is-deep :is(.flip,.cover-flip){transform-style:flat}
+.c.is-deep :is(.face,.cface){-webkit-backface-visibility:visible;backface-visibility:visible}
+.c.is-deep :is(.face.back,.cover-back){display:none}
+
+/* затемнение задних */
+.shade{transition:opacity .8s ease}
+
+/* ── ярлыки ───────────────────────────────────────────────── */
+/* место ярлыка — translate (слот --d), подъём при наведении — transform:
+   у них разные переходы, они не мешают друг другу */
+.tab{left:24px;top:-26px;translate:calc(var(--d,0) * 148px) 0;
+  transition:translate var(--t-row) var(--e-row) .12s,transform .15s linear,background-color .2s,color .2s}
+.tab:hover{transform:translateY(-2px)}
+body[data-open="0"] .c:not([data-depth="0"]) .tab{top:-26px;translate:calc(var(--d,0) * 148px) 30px}
+/* стопка едет: ярлыки задних поднимаются над передней */
+body.is-moving .tab{transition:translate var(--t-tabs) var(--e-tabs),transform .15s linear,background-color .2s,color .2s}
+/* первое открытие: по одному, 400 + (n−1)·220 мс */
+body.is-first .c:not([data-depth="0"]) .tab{transition-delay:calc(400ms + (var(--d,1) - 1) * 220ms),0s,0s,0s}
+
+/* ── панель ───────────────────────────────────────────────── */
+/* доехала (1,3 с) + .9 с при первом открытии = 2,2 с; потом сразу */
+.panel{transition:opacity .3s}
+body.is-arrived .panel{opacity:1;pointer-events:auto;transition:opacity .6s}
+body.is-arrived.is-first .panel{transition-delay:.9s}
+
+/* ── без переходов на один кадр ───────────────────────────── */
+.stack.is-instant,.stack.is-instant *,
+body.is-instant .stack,body.is-instant .stack *,
+body.is-instant .intro,body.is-instant .pull,body.is-instant .panel{transition:none!important;animation:none!important}
+
+/* ── телефон 390: слоты ярлыков 38 px ─────────────────────── */
+@media (max-width:767px){
+  .tab{left:8px;top:-22px;translate:calc(var(--d,0) * 38px) 0}
+  body[data-open="0"] .c:not([data-depth="0"]) .tab{top:-22px;translate:calc(var(--d,0) * 38px) 24px}
+}
+
+/* ── меньше движения ──────────────────────────────────────── */
+/* длительности гасит общее правило в база.css; посадку убираем совсем */
+@media (prefers-reduced-motion:reduce){
+  .stack-seat.is-seat{animation:none}
+}
