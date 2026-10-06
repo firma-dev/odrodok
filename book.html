@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Одродок</title>
+<meta name="description" content="Одродок — документальное кино.">
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#f2ece0">
+
+<style>
+/* ── ШРИФТЫ ─────────────────────────────────────────────── */
+@font-face{ font-family:"OCRABecker"; font-weight:400; font-style:normal; font-display:swap;
+  src:url('assets/fonts/ocra-becker.woff2') format('woff2'),
+      url('assets/fonts/ocra-becker.otf') format('opentype'); }
+
+/* ── ТОКЕНЫ ─────────────────────────────────────────────── */
+html{
+  --mobile-font-size-min:11; --mobile-font-size-max:16;
+  --desktop-font-size-min:10.5; --desktop-font-size-max:15;
+  --mobile-viewport-min:320; --mobile-desktop-breakpoint:768; --desktop-viewport-max:1500;
+  font-size:calc(var(--mobile-font-size-min) * 1px);
+}
+@media screen and (min-width:320px){html{font-size:calc(var(--mobile-font-size-min) * 1px + (var(--mobile-font-size-max) - var(--mobile-font-size-min)) * ((100vw - var(--mobile-viewport-min) * 1px) / (var(--mobile-desktop-breakpoint) - var(--mobile-viewport-min))))}}
+@media screen and (min-width:768px){html{font-size:calc(var(--desktop-font-size-min) * 1px + (var(--desktop-font-size-max) - var(--desktop-font-size-min)) * ((100vw - var(--mobile-desktop-breakpoint) * 1px) / (var(--desktop-viewport-max) - var(--mobile-desktop-breakpoint))))}}
+@media screen and (min-width:1500px){html{font-size:calc(var(--desktop-font-size-max) * 1px)}}
+
+:root{
+  --c-paper:rgb(242,236,224); --c-paper2:rgb(233,226,211); --c-card:rgb(253,252,250);
+  --c-ink:rgb(23,21,18); --c-soft:rgb(112,105,92);
+  --c-brick:rgb(216,66,32); --c-mark:rgb(247,216,110);
+
+  --paper:var(--c-paper); --card:var(--c-card); --ink:var(--c-ink);
+  --soft:var(--c-soft); --brick:var(--c-brick); --mark:var(--c-mark);
+  --line:color-mix(in srgb, var(--ink) 20%, transparent);
+
+  --gap-s:.5rem; --gap-m:1rem; --gap-l:1.5rem;
+  --bw-s:1px; --bw-m:2px;
+  --stroke:1px; --stroke-h:2px;
+
+  --sh:3px 3px 0 var(--ink);
+  --sh2:2px 2px 0 var(--ink);
+  --sh-lift:7px 7px 0 var(--ink);
+  --ease:cubic-bezier(.2,.7,.3,1);
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; height:100%; overflow:hidden; }
+
+body{
+  font-family:"OCRABecker", monospace;
+  color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(120% 80% at 12% 6%, rgba(120,95,55,.055), transparent 62%),
+    radial-gradient(100% 70% at 88% 94%, rgba(120,95,55,.05), transparent 60%),
+    radial-gradient(70% 50% at 60% 40%, rgba(255,255,255,.5), transparent 70%);
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;
+}
+
+/* зерно бумаги */
+body::before, body::after{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  mix-blend-mode:multiply; z-index:60;
+}
+body::before{ opacity:.075;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.22' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
+body::after{ opacity:.11;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+img{ display:block; max-width:100%; }
+button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+
+/* ── СЦЕНА: стопка листов ───────────────────────────────── */
+.stage{
+  position:fixed; inset:0;
+  display:grid; place-items:center;
+  padding:clamp(.6rem, 2.2vh, 1.6rem);
+  z-index:1;
+}
+
+.sheet{
+  position:absolute;
+  width:min(92vw, 62rem);
+  height:min(88vh, 46rem);
+  background:var(--card);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  will-change:transform;
+  touch-action:pan-y;
+  user-select:none;
+}
+/* лист под курсором можно тянуть */
+.sheet.top{ cursor:grab; }
+.sheet.top.dragging{ cursor:grabbing; }
+
+/* уходящий лист чуть приподнят — видно, что он отделился от стопки */
+.sheet.lifting{ box-shadow:var(--sh-lift); }
+
+/* ── ШАПКА ЛИСТА ────────────────────────────────────────── */
+.sheet__head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:var(--gap-m);
+  padding:var(--gap-m) var(--gap-l);
+  border-bottom:var(--bw-m) solid var(--ink);
+  flex:0 0 auto;
+}
+.sheet__kicker{
+  display:flex; align-items:center; gap:.7em; min-width:0;
+  font-size:.72em; letter-spacing:.16em; text-transform:uppercase; color:var(--soft);
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+}
+/* знак живёт в шапке листа, а не поверх страницы */
+.sheet__mark{
+  display:block; height:1.15em; width:auto; flex:0 0 auto;
+  -webkit-text-stroke:0;
+}
+.sheet__num{
+  font-size:.72em; letter-spacing:.14em; color:var(--soft);
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+}
+
+/* ── ТЕЛО ЛИСТА: прокрутка только здесь ─────────────────── */
+.sheet__body{
+  flex:1 1 auto; min-height:0;
+  overflow-y:auto; overscroll-behavior:contain;
+  padding:var(--gap-l);
+  scrollbar-width:thin;
+}
+/* разворот: обложка слева, текст справа — так контент влезает без прокрутки */
+@media (min-width:900px){
+  .sheet__body.spread{
+    display:grid;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+    gap:var(--gap-l);
+    align-content:start;
+  }
+  .sheet__body.spread .media{ margin-bottom:0; align-self:start; }
+  /* в колонке заголовку меньше места — кегль считаем от ширины колонки */
+  .sheet__body.spread h1{ margin-top:-.1em; font-size:min(1.4em, 2.1vw); }
+}
+/* лист без текста — обложка во всю полосу, заголовок под ней */
+.sheet__body.solo{ display:flex; flex-direction:column; }
+.sheet__body.solo .media{ max-height:min(64vh, 30rem); }
+.sheet__body.solo .lead:empty{ display:none; }
+.sheet__body::-webkit-scrollbar{ width:6px; }
+.sheet__body::-webkit-scrollbar-thumb{ background:var(--line); }
+
+h1{
+  margin:0 0 .5em;
+  font-size:min(1.5em, 5.2vw); line-height:1.08;
+  letter-spacing:.03em; text-transform:uppercase;
+  -webkit-text-stroke:var(--stroke-h) currentColor; paint-order:stroke fill;
+  overflow-wrap:anywhere;
+}
+.col{ min-width:0; }
+.lead{
+  font-size:.95em; line-height:1.6; letter-spacing:.04em; text-transform:uppercase;
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+  max-width:46rem;
+}
+.lead p{ margin:0 0 1em; }
+.lead p:last-child{ margin-bottom:0; }
+
+/* ── ОБЛОЖКА И ПЛЕЕР ────────────────────────────────────────
+   Обёртка держит пропорцию, обложка и iframe занимают её целиком —
+   при запуске видео лист не дёргается. */
+.media{
+  position:relative; width:100%; aspect-ratio:16/9;
+  max-height:min(46vh, 22rem);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh2);
+  margin-bottom:var(--gap-l);
+  background:var(--paper2);
+  overflow:hidden;
+}
+.media .cover,
+.media iframe{
+  position:absolute; inset:0;
+  width:100%; height:100%; border:0;
+  object-fit:cover; display:block;
+}
+/* кнопка воспроизведения поверх обложки */
+.media[data-video] .play{
+  position:absolute; inset:0; z-index:1;
+  display:grid; place-items:center;
+  border:0; padding:0; background:transparent; cursor:pointer;
+}
+.media[data-video] .play i{
+  display:grid; place-items:center;
+  width:3.2em; height:3.2em;
+  background:var(--card); color:var(--ink);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh);
+  font-style:normal; font-size:1em; padding-left:.15em;
+  transition:background .15s var(--ease), box-shadow .15s var(--ease), transform .15s var(--ease);
+}
+.media[data-video] .play:hover i{
+  background:var(--brick); color:var(--card);
+  box-shadow:var(--sh-lift); transform:translate(-2px,-2px);
+}
+.media[data-video] .play:active i{ box-shadow:none; transform:translate(3px,3px); }
+.media.playing .play{ display:none; }
+
+/* ── ПОДВАЛ ЛИСТА ───────────────────────────────────────── */
+.sheet__foot{
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:space-between; gap:var(--gap-m);
+  padding:var(--gap-s) var(--gap-l);
+  border-top:var(--bw-s) solid var(--line);
+  font-size:.72em; letter-spacing:.14em; text-transform:uppercase; color:var(--soft);
+}
+.enter{
+  display:inline-flex; align-items:center; gap:.5em;
+  padding:.45em .9em;
+  background:var(--card); color:var(--ink);
+  border:var(--bw-s) solid var(--ink);
+  box-shadow:var(--sh2);
+  font-size:1em; letter-spacing:.14em; text-transform:uppercase;
+  -webkit-text-stroke:var(--stroke) currentColor; paint-order:stroke fill;
+  transition:background .15s var(--ease), box-shadow .15s var(--ease), transform .15s var(--ease);
+}
+.enter:hover{ background:var(--mark); box-shadow:var(--sh); transform:translate(-1px,-1px); }
+.enter:active{ box-shadow:none; transform:translate(2px,2px); }
+.acts{ display:flex; align-items:center; gap:var(--gap-s); flex:0 0 auto; }
+
+/* ── КРАЯ ДЛЯ КЛИКА ─────────────────────────────────────── */
+.edge{
+  position:fixed; top:0; bottom:0; width:clamp(48px, 7vw, 110px);
+  z-index:40; border:none; background:transparent;
+  display:grid; place-items:center;
+  opacity:0; transition:opacity .2s var(--ease);
+}
+.edge:hover{ opacity:1; }
+.edge--prev{ left:0; cursor:w-resize; }
+.edge--next{ right:0; cursor:e-resize; }
+.edge span{
+  font-size:1.4rem; color:var(--soft);
+  -webkit-text-stroke:.5px currentColor; paint-order:stroke fill;
+}
+
+/* ── СЧЁТЧИК И ХЛЕБНЫЕ КРОШКИ ───────────────────────────── */
+.hud{
+  position:fixed; left:0; right:0; bottom:0;
+  display:flex; align-items:center; justify-content:center; gap:var(--gap-m);
+  padding:.7rem;
+  font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--soft);
+  z-index:50; pointer-events:none;
+}
+.hud b{ font-weight:400; color:var(--ink); }
+.hud .back{
+  pointer-events:auto;
+  border:var(--bw-s) solid var(--ink); background:var(--card);
+  padding:.35em .7em; box-shadow:var(--sh2);
+  font-size:1em; letter-spacing:.14em; text-transform:uppercase; color:var(--ink);
+}
+.hud .back:hover{ background:var(--mark); }
+.hud .back[hidden]{ display:none; }
+
+/* точки-страницы */
+.dots{ display:flex; gap:.4rem; pointer-events:auto; }
+.dot{
+  width:.5rem; height:.5rem; border:1px solid var(--ink); background:transparent;
+  padding:0; transition:background .15s var(--ease);
+}
+.dot[aria-current="true"]{ background:var(--ink); }
+
+@media (max-width:768px){
+  .sheet{ width:94vw; height:82vh; }
+  .edge{ width:44px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sheet{ transition:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage"></div>
+
+<button class="edge edge--prev" id="edgePrev" aria-label="Предыдущая"><span>‹</span></button>
+<button class="edge edge--next" id="edgeNext" aria-label="Следующая"><span>›</span></button>
+
+<div class="hud">
+  <button class="back" id="back" hidden>← назад</button>
+  <div class="dots" id="dots"></div>
+  <span id="counter"></span>
+</div>
+
+<script>
+// ── СОДЕРЖАНИЕ КНИГИ ────────────────────────────────────────
+// Первый уровень — разделы. У раздела может быть children:
+// тогда на листе появляется кнопка входа во вложенную книгу.
+const BOOK = [
+  {
+    kicker: 'Одродок',
+    title: 'Документальное кино',
+    cover: null,
+    html: `<p>виктор сивак. документальные фильмы, этюды и замыслы.</p>
+           <p>листайте — колесом, стрелками, перетаскиванием листа или кликом по краю.</p>`,
+    foot: '2026'
+  },
+  {
+    kicker: 'Раздел',
+    title: 'Фильмы',
+    cover: 'assets/works/gde-nas-net.webp',
+    html: `<p>длинные работы. смотреть можно прямо здесь.</p>`,
+    foot: '3 фильма',
+    children: [
+      { kicker:'Фильм', title:'О, Марго',
+        cover: 'assets/works/o-margo.webp',
+        video:'1abadb69-43b8-4262-acf4-dae4f03ad95b', html:'', foot:'36 мин 56 с' },
+      { kicker:'Фильм', title:'Где нас нет',
+        cover: 'assets/works/gde-nas-net.webp',
+        video:'96353460-8e1d-46ec-beca-57fdfd605f1e', html:'', foot:'22 мин 22 с' },
+      { kicker:'Фильм', title:'Человеку нужен человек',
+        cover: 'assets/works/chelovek-nuzhen.webp',
+        video:'88d61280-9d4b-4356-8ec5-976acab07675', html:'', foot:'8 мин 08 с' }
+    ]
+  },
+  {
+    kicker: 'Раздел',
+    title: 'Этюды',
+    cover: 'assets/works/pervoprohodec.webp',
+    html: `<p>короткие работы — по одному наблюдению каждая. последняя: «первопроходец», угличи, июль 2026.</p>`,
+    foot: '4 работы',
+    children: [
+      { kicker:'Этюд · 2026', title:'Первопроходец',
+        cover: 'assets/works/pervoprohodec.webp',
+        video:'ee92017b-167c-4e0b-9fca-beb5c7ed3d4f',
+        html:`<p>полтора дня с гришей порядковым в угличах. он почти не говорит — пространство открывается через него.</p>`,
+        foot:'Угличи · 7 мин 47 с' },
+      { kicker:'Этюд', title:'Место, в котором мне спокойно',
+        cover: 'assets/works/mesto.webp',
+        video:'2cf05049-dd93-4803-b9ff-a8059701dcbd', html:'', foot:'3 мин 50 с' },
+      { kicker:'Этюд', title:'Человек, с которым мне спокойно',
+        cover: 'assets/works/chelovek-spokoino.webp',
+        video:'5a42c0d4-8bc1-4459-bf6f-6da90d7a213a', html:'', foot:'6 мин 00 с' },
+      { kicker:'Этюд', title:'Бадаевский этюд',
+        cover: 'assets/works/badaevsky.webp',
+        video:'c1f6200a-8d14-4bf5-a08d-120f023418b0', html:'', foot:'3 мин 10 с' }
+    ]
+  },
+  {
+    kicker: 'Раздел',
+    title: 'Замыслы',
+    cover: 'assets/pervoprohodcy/cover.webp',
+    html: `<p>то, что снимается сейчас или готовится к съёмкам.</p>`,
+    foot: '2 замысла',
+    children: [
+      {
+        kicker: 'Замысел · 2026',
+        title: 'Первопроходцы',
+        cover: 'assets/pervoprohodcy/cover.webp',
+        video: 'ee92017b-167c-4e0b-9fca-beb5c7ed3d4f',
+        html: `<p>я живу в мегаполисе и хочу уехать. не знаю, чего это стоит, поэтому еду туда, где люди уже уехали.</p>
+               <p>на волге под угличем с нуля строят деревню — место для тех, кто решился уйти подальше от москвы. сейчас там стройка и один постоянный житель.</p>
+               <p>этот житель — гриша порядков. он сменил московский офис на жизнь в шоуруме: живёт в прекрасном доме, но не может пользоваться его кухней.</p>
+               <p>вопрос ко всем один: что человек получает, уезжая из города, и чем за это платит.</p>`,
+        foot: 'Съёмки в сентябре'
+      },
+      {
+        kicker: 'Замысел · 2026',
+        title: 'Воздух в Абрамцево',
+        cover: 'assets/vozduh/shot-09.webp',
+        html: `<p>я плохо помню своё детство. почти ничего не осталось. поэтому еду туда, где четыре дня подряд его будут вспоминать.</p>
+               <p>в абрамцево, на даче, моя жена алина и её мама впервые делают музыкальную резиденцию «воздух». приезжают музыканты, живут в доме четыре дня и пишут песни вместе.</p>
+               <p>150 лет назад здесь уже было так. в абрамцево съехались художники, стали жить вместе, ставить спектакли, строить церковь — и открыли новое направление в русском искусстве.</p>`,
+        foot: '14 кадров из этюда'
+      }
+    ]
+  },
+  {
+    kicker: 'Контакты',
+    title: 'Написать',
+    cover: null,
+    html: `<p>по вопросам показов, фестивалей и совместной работы.</p>
+           <p>viktor.m.sivak@gmail.com</p>`,
+    foot: '© 2026 Одродок'
+  }
+];
+
+// ── СОСТОЯНИЕ ───────────────────────────────────────────────
+const stage    = document.getElementById('stage');
+const dotsEl   = document.getElementById('dots');
+const counter  = document.getElementById('counter');
+const backBtn  = document.getElementById('back');
+
+let stack  = [{ pages: BOOK, index: 0, title: null }];  // стек уровней
+let sheets = [];        // DOM-листы текущего уровня
+let busy   = false;
+
+const level = () => stack[stack.length - 1];
+
+// ── СБОРКА ЛИСТА ────────────────────────────────────────────
+function buildSheet(page, i, total){
+  const el = document.createElement('article');
+  el.className = 'sheet';
+
+  // обложка и, если есть видео, кнопка воспроизведения поверх неё
+  const media = page.cover
+    ? `<div class="media"${page.video ? ` data-video="${page.video}"` : ''}>
+         <img class="cover" src="${page.cover}" alt="" loading="lazy">
+         ${page.video ? '<button class="play" aria-label="Смотреть"><i>▶</i></button>' : ''}
+       </div>`
+    : '';
+
+  const acts = [
+    page.video ? `<button class="enter" data-play>смотреть →</button>` : '',
+    page.children ? `<button class="enter" data-enter="${i}">открыть ${page.children.length} →</button>` : ''
+  ].filter(Boolean).join('');
+
+  el.innerHTML = `
+    <header class="sheet__head">
+      <span class="sheet__kicker">
+        <img class="sheet__mark" src="assets/mark.webp" alt="Одродок">
+        ${page.kicker || ''}
+      </span>
+      <span class="sheet__num">${String(i + 1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</span>
+    </header>
+    <div class="sheet__body${page.cover ? (page.html ? ' spread' : ' solo') : ''}">
+      ${media}
+      <div class="col">
+        <h1>${page.title}</h1>
+        <div class="lead">${page.html || ''}</div>
+      </div>
+    </div>
+    <footer class="sheet__foot">
+      <span>${page.foot || ''}</span>
+      <span class="acts">${acts}</span>
+    </footer>`;
+  return el;
+}
+
+function render(){
+  const { pages, index } = level();
+  stage.innerHTML = '';
+  sheets = pages.map((p, i) => {
+    const el = buildSheet(p, i, pages.length);
+    stage.appendChild(el);
+    return el;
+  });
+  layout();
+  renderHud();
+}
+
+// раскладка стопки: текущий сверху, следующие чуть ниже и мельче
+function layout(animate = true){
+  const { index } = level();
+  sheets.forEach((el, i) => {
+    const d = i - index;                    // 0 — текущий, >0 — под ним
+
+    // ушёл с экрана — гасим плеер, чтобы звук не шёл из-под стопки
+    if (d !== 0){
+      const m = el.querySelector('.media.playing');
+      if (m){ m.classList.remove('playing'); const f = m.querySelector('iframe'); if (f) f.remove(); }
+    }
+
+    el.classList.toggle('top', d === 0);
+    el.style.transition = animate
+      ? 'transform .42s var(--ease), opacity .42s var(--ease), box-shadow .2s var(--ease)'
+      : 'none';
+
+    if (d < 0){                              // уже пролистанные — ушли влево
+      el.style.transform = `translate3d(-115%, 0, 0) rotate(-4deg)`;
+      el.style.opacity = 0;
+      el.style.zIndex = 1;
+      el.style.pointerEvents = 'none';
+    } else {                                 // текущий и стопка под ним
+      const depth = Math.min(d, 3);
+      el.style.transform =
+        `translate3d(0, ${depth * 9}px, 0) scale(${1 - depth * 0.018})`;
+      el.style.opacity = d > 3 ? 0 : 1;
+      el.style.zIndex = 30 - depth;
+      el.style.pointerEvents = d === 0 ? 'auto' : 'none';
+    }
+  });
+}
+
+function renderHud(){
+  const { pages, index, title } = level();
+  dotsEl.innerHTML = pages.map((p, i) =>
+    `<button class="dot" data-go="${i}" aria-current="${i === index}" aria-label="${p.title}"></button>`
+  ).join('');
+  counter.textContent = title ? title : '';
+  backBtn.hidden = stack.length === 1;
+}
+
+// ── ЛИСТАНИЕ ────────────────────────────────────────────────
+function go(dir){
+  const lv = level();
+  const next = lv.index + dir;
+  if (next < 0 || next >= lv.pages.length || busy) return;
+  busy = true;
+  lv.index = next;
+  layout();
+  renderHud();
+  setTimeout(() => busy = false, 300);
+}
+
+function goTo(i){
+  const lv = level();
+  if (i === lv.index || busy) return;
+  busy = true;
+  lv.index = i;
+  layout();
+  renderHud();
+  setTimeout(() => busy = false, 300);
+}
+
+function enter(i){
+  const page = level().pages[i];
+  if (!page.children) return;
+  stack.push({ pages: page.children, index: 0, title: page.title });
+  render();
+}
+
+function back(){
+  if (stack.length === 1) return;
+  stack.pop();
+  render();
+}
+
+// ── УПРАВЛЕНИЕ: клавиши ────────────────────────────────────
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'PageUp')  { e.preventDefault(); go(-1); }
+  if (e.key === 'Escape') back();
+});
+
+// ── УПРАВЛЕНИЕ: колесо ─────────────────────────────────────
+// внутри длинного текста колесо прокручивает; долистав до края — листает лист
+let wheelLock = 0;
+addEventListener('wheel', e => {
+  const body = e.target.closest('.sheet__body');
+  if (body){
+    const atTop = body.scrollTop <= 0;
+    const atEnd = body.scrollTop + body.clientHeight >= body.scrollHeight - 1;
+    const scrollable = body.scrollHeight > body.clientHeight + 2;
+    if (scrollable && !((e.deltaY > 0 && atEnd) || (e.deltaY < 0 && atTop))) return;
+  }
+  const now = Date.now();
+  if (now - wheelLock < 480) return;
+  if (Math.abs(e.deltaY) < 12 && Math.abs(e.deltaX) < 12) return;
+  wheelLock = now;
+  go((e.deltaY || e.deltaX) > 0 ? 1 : -1);
+}, { passive:true });
+
+// ── УПРАВЛЕНИЕ: перетаскивание листа ───────────────────────
+let drag = null;
+
+stage.addEventListener('pointerdown', e => {
+  const el = sheets[level().index];
+  if (!el || busy) return;
+  if (e.target.closest('.enter, .play')) return;          // кнопки не тянем
+  if (e.target.closest('.media.playing')) return;         // и запущенный плеер тоже
+  const body = e.target.closest('.sheet__body');
+  drag = {
+    el, id:e.pointerId,
+    x:e.clientX, y:e.clientY,
+    dx:0, dy:0, t:Date.now(),
+    fromBody: body && body.scrollHeight > body.clientHeight + 2
+  };
+  el.setPointerCapture(e.pointerId);
+  el.style.transition = 'none';
+});
+
+addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  drag.dx = e.clientX - drag.x;
+  drag.dy = e.clientY - drag.y;
+
+  // вертикальный жест внутри прокручиваемого текста — не листаем
+  if (drag.fromBody && Math.abs(drag.dy) > Math.abs(drag.dx)) return;
+
+  drag.el.classList.add('dragging','lifting');
+  const rot = drag.dx / 60;                                // лист слегка кренится
+  drag.el.style.transform = `translate3d(${drag.dx}px, ${Math.abs(drag.dx) * .02}px, 0) rotate(${rot}deg)`;
+});
+
+addEventListener('pointerup', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const { el, dx, t } = drag;
+  const speed = Math.abs(dx) / Math.max(1, Date.now() - t);   // px/ms — учитываем флик
+  el.classList.remove('dragging','lifting');
+  el.style.transition = 'transform .42s var(--ease), opacity .42s var(--ease)';
+
+  const passed = Math.abs(dx) > el.offsetWidth * 0.22 || speed > 0.55;
+  drag = null;
+
+  if (passed && dx < 0) { go(1); }
+  else if (passed && dx > 0) { go(-1); }
+  else { layout(); }                                          // не дотянул — пружинка назад
+});
+
+// ── УПРАВЛЕНИЕ: края и точки ───────────────────────────────
+document.getElementById('edgeNext').onclick = () => go(1);
+document.getElementById('edgePrev').onclick = () => go(-1);
+backBtn.onclick = back;
+
+// ── ПЛЕЕР ──────────────────────────────────────────────────
+// обложка подменяется iframe кинескопа прямо в листе,
+// пропорция уже задана обёрткой — стопка не дёргается
+function play(sheet){
+  const media = sheet && sheet.querySelector('.media[data-video]');
+  if (!media || media.classList.contains('playing')) return;
+  const id = media.dataset.video;
+  const f = document.createElement('iframe');
+  f.src = `https://kinescope.io/embed/${id}?autoplay=1`;
+  f.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media;';
+  f.allowFullscreen = true;
+  f.frameBorder = '0';
+  media.appendChild(f);
+  media.classList.add('playing');
+}
+
+document.addEventListener('click', e => {
+  const dot = e.target.closest('[data-go]');
+  if (dot) goTo(+dot.dataset.go);
+  const btn = e.target.closest('[data-enter]');
+  if (btn) enter(+btn.dataset.enter);
+  const p = e.target.closest('[data-play], .media[data-video] .play');
+  if (p) play(p.closest('.sheet'));
+});
+
+render();
+</script>
+</body>
+</html>
